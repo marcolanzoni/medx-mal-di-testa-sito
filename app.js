@@ -424,9 +424,11 @@
     var box = document.getElementById('calendly'); if (!box) return;
     ev('prenotazione_calendario', null, true);
     var url = C.calendly + '?hide_event_type_details=1&hide_landing_page_details=1';
+    // nome ed email già scritti (Calendly li legge dall'indirizzo); niente telefono, niente risposte
+    if (ultimoContatto) url += '&name=' + encodeURIComponent(ultimoContatto.nome) + '&email=' + encodeURIComponent(ultimoContatto.email);
     function monta() {
       box.innerHTML = '';
-      window.Calendly.initInlineWidget({ url: url, parentElement: box, prefill: ultimoContatto ? { name: ultimoContatto.nome, email: ultimoContatto.email } : {} });
+      window.Calendly.initInlineWidget({ url: url, parentElement: box });
     }
     if (window.Calendly) return monta();
     var s = document.createElement('script'); s.src = 'https://assets.calendly.com/assets/external/widget.js'; s.async = true;
