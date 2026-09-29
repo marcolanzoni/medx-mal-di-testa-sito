@@ -164,7 +164,7 @@
         '<div class="altre-box" id="altreBox" hidden>' +
         altre.map(function (k) { return '<div class="voce"><h3>' + h(d.o[k][1]) + '</h3><p>' + d.o[k][2] + '</p></div>'; }).join('') + '</div></div>';
     }
-    s += '</div>';
+    s += '</div>' + firma();
     return {
       corpo: s,
       piede: '<button class="btn" type="button" data-azione="avanti"' + (scelte.length ? '' : ' disabled') + '>' + (i < N - 1 ? 'Avanti' : 'Vedi il riepilogo') + '</button>',
@@ -371,9 +371,11 @@
     var ok = true, $ = function (id) { return document.getElementById(p + id); };
     function err(id, msg) { $(id + 'E').textContent = msg; var inp = $(id); if (inp && inp.tagName === 'INPUT' && inp.type !== 'checkbox') inp.setAttribute('aria-invalid', msg ? 'true' : 'false'); if (msg && ok) { ok = false; inp.focus(); } }
     var nome = $('Nome').value.trim(), email = $('Email').value.trim().toLowerCase(), tel = $('Tel').value.replace(/[\s.\-()\/]/g, '');
+    // Active accetta il telefono solo col prefisso internazionale: senza, scarta il contatto in silenzio
+    if (/^00\d/.test(tel)) tel = '+' + tel.slice(2); else if (/^\d/.test(tel)) tel = '+39' + tel;
     err('Nome', nome.length < 2 ? 'Scrivi il tuo nome.' : '');
     err('Email', /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email) ? '' : 'Controlla l’indirizzo email.');
-    err('Tel', /^\+?\d{8,15}$/.test(tel) ? '' : 'Scrivi un numero di telefono valido.');
+    err('Tel', /^\+\d{9,15}$/.test(tel) ? '' : 'Scrivi un numero di telefono valido.');
     err('Privacy', $('Privacy').checked ? '' : 'Per poterti ricontattare serve la spunta sull’informativa.');
     return ok ? { nome: nome, email: email, tel: tel, wa: $('Wa').checked } : null;
   }
