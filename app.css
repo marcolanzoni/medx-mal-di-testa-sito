@@ -109,7 +109,7 @@ p+p{margin-top:10px}
 .scheda h3{color:var(--petrolio)}
 .scheda p{margin-top:6px;font-size:15.5px}
 .scheda+.scheda{margin-top:10px}
-.altre{margin-top:14px}
+.altre{margin-top:14px;scroll-margin-bottom:104px}
 .altre-box{margin-top:6px;border-top:1px solid rgba(0,88,92,.18);padding-top:12px}
 .altre-box[hidden]{display:none}
 .altre-box .voce+.voce{margin-top:14px}

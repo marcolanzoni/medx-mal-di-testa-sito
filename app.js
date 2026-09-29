@@ -348,8 +348,9 @@
     if (max === 1) sc = [k];
     else { var p = sc.indexOf(k); if (p >= 0) sc.splice(p, 1); else { sc.push(k); if (sc.length > max) sc.shift(); } }
     S.r[S.i] = sc; salva(); render(false);
-    var sch = $corpo.querySelector('.scheda:last-of-type');
-    if (sch && sch.scrollIntoView) setTimeout(function () { sch.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 40);
+    // la scheda e «leggi anche le altre» devono stare sopra il pulsante fisso
+    var alt = $corpo.querySelector('.altre');
+    if (alt && alt.scrollIntoView) setTimeout(function () { alt.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 40);
   }
 
   // stampa: il riepilogo col criterio, anche dalle porte
