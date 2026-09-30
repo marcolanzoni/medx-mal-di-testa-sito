@@ -298,7 +298,7 @@
     return {
       corpo:
         '<div class="occhiello">Ricevuto</div><h2 tabindex="-1">Ti scrive la segreteria</h2>' +
-        '<p class="lead">Enrica, della segreteria di MedX Clinic, ti risponde nelle prossime ore. Non il dottore, e non per venderti niente: per rispondere alle tue domande su come funziona.</p>' +
+        '<p class="lead">La segreteria di MedX Clinic ti risponde nelle prossime ore. Non il dottore, e non per venderti niente: per rispondere alle tue domande su come funziona.</p>' +
         '<p class="piccolo grigio" style="margin-top:12px">Se preferisci chiamare tu: <a href="tel:' + C.telefono.replace(/\s/g, '') + '">' + h(C.telefono) + '</a>.</p>' +
         '<p style="margin-top:16px"><button type="button" class="link" data-azione="stampa-niente">Salva o stampa il tuo riepilogo</button></p>' + firma(),
       piede: ''
