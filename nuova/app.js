@@ -116,11 +116,14 @@
     // Primo schermo: un volto vero, un messaggio, un'azione. Il resto sotto la piega.
     return {
       corpo:
-        '<figure class="eroe"><img src="img/visita.jpg" alt="Il dott. Andrea Armenti ascolta una paziente alla scrivania, in clinica" width="384" height="190" fetchpriority="high"><figcaption>MedX Clinic · Roma</figcaption></figure>' +
-        '<div class="apertura-testo">' +
+        // Primo schermo: il video vero della clinica (elettromiografia), titolo, un'azione.
+        '<section class="eroe"><video src="img/sensori.mp4" poster="img/sensori.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video><div class="velo"></div>' +
+        '<div class="eroe-in"><div class="occhiello">MedX Clinic · Roma</div>' +
         '<h1 tabindex="-1">Sette domande sul tuo mal di testa</h1>' +
         '<p class="lead">Sono le domande che il dott. Armenti fa all’inizio di una valutazione. Dopo ognuna trovi <b>cosa c’entra quella cosa col mal di testa</b>.</p>' +
-        '</div>' +
+        '<button class="btn" type="button" data-azione="comincia">' + (ripresa ? 'Riprendi da dove eri' : 'Comincia') + FRECCIA + '</button>' +
+        (ripresa ? '<button class="btn vuoto" type="button" data-azione="ricomincia">Ricomincia da capo</button>' : '<div class="quanto"><span>7 domande</span><span>2 minuti</span><span>niente dati per iniziare</span></div>') +
+        '<i class="giu" aria-hidden="true"></i></div></section>' +
         '<div class="dopo-piega">' +
         '<div class="blocco"><h3>Cosa ricevi alla fine</h3>' +
         '<p class="piccolo" style="margin-top:6px">Le tue risposte in ordine, e accanto <b>le cinque cose che si guardano in clinica</b> per capire se un mal di testa nasce dai muscoli.</p>' +
@@ -131,8 +134,7 @@
         '<div class="blocco"><p class="piccolo grigio">Se preferisci saltare le domande e vedere <b>come funziona una valutazione</b> — quanto dura, quanto costa, cosa si sente — <button type="button" class="link" data-azione="salta">la pagina è qui</button>.</p></div>' +
         '</div>' +
         firma(true),
-      piede: '<button class="btn" type="button" data-azione="comincia">' + (ripresa ? 'Riprendi da dove eri' : 'Comincia') + FRECCIA + '</button>' +
-        (ripresa ? '<button class="btn vuoto" type="button" data-azione="ricomincia">Ricomincia da capo</button>' : '<div class="quanto">7 domande · circa 2 minuti · niente dati per iniziare</div>')
+      piede: ''
     };
   };
 
@@ -161,6 +163,8 @@
       '</svg><figcaption>Tavola illustrata</figcaption></figure>';
   }
 
+  // Un video vero della clinica sotto alcune domande: dipende dal NUMERO della domanda, mai dalla risposta.
+  var CLIP = { 1: ['mappa', 'L’analisi elettromiografica · MedX Clinic'], 2: ['calibra', 'La misurazione dei muscoli · MedX Clinic'], 3: ['eco', 'Ecografia del massetere · MedX Clinic'] };
   V.domanda = function () {
     var i = Math.min(Math.max(S.i, 0), N - 1), d = D[i], scelte = risposta(i), multi = (d.max || 1) > 1;
     var s = '<div class="domanda"><h2 tabindex="-1" id="dq">' + h(d.q) + '</h2>';
@@ -174,6 +178,7 @@
     if (scelte.length) {
       // una risposta, una scheda: la scheda parla dell'argomento, non della persona
       if (i === 0) s += tavola();
+      else if (CLIP[i]) s += '<figure class="clip ' + CLIP[i][0] + '"><video src="img/' + CLIP[i][0] + '.mp4" poster="img/' + CLIP[i][0] + '.jpg" autoplay muted loop playsinline aria-hidden="true"></video><figcaption>' + CLIP[i][1] + '</figcaption></figure>';
       scelte.forEach(function (k) {
         s += '<div class="scheda"><div class="occhiello">Cosa c’entra</div><h3>' + h(d.o[k][1]) + '</h3><p>' + d.o[k][2] + '</p></div>';
       });
