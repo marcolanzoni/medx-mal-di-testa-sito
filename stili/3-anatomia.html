@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow"><title>Stile 3 · Anatomia viva · MedX</title>
+<style>
+@font-face{font-family:"Plus Jakarta Sans";font-weight:200 800;font-display:swap;src:url(../assets/fonts/jakarta.woff2) format("woff2")}
+@font-face{font-family:"Roboto";font-weight:400 500;font-display:swap;src:url(../assets/fonts/roboto.woff2) format("woff2")}
+:root{--cupo:#0A2829;--pet:#00585C;--acqua:#3FB8AF;--oro:#C1AC80;--avorio:#F3EBDC;--nero:#16201F;--h:"Plus Jakarta Sans",system-ui,sans-serif;--b:Roboto,system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--avorio);color:#2B3332;font:400 17px/1.6 var(--b);overflow-x:hidden}
+h1,h2,h3{font-family:var(--h);color:var(--nero);letter-spacing:-.025em;line-height:1.06}
+.top{position:fixed;z-index:9;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:calc(16px + env(safe-area-inset-top)) 22px 12px;background:linear-gradient(var(--avorio) 60%,rgba(243,235,220,0))}
+.top img{height:17px;filter:brightness(0);opacity:.8}.top span{font:600 11px/1 var(--h);letter-spacing:.22em;color:var(--pet)}
+/* la tavola resta ferma, il testo le scorre sopra */
+.palco{position:relative}
+.tavola{position:sticky;top:0;height:100svh;overflow:hidden}
+.tavola img,.tavola svg{position:absolute;inset:0;width:100%;height:100%}
+.tavola img{object-fit:cover;object-position:50% 50%;mix-blend-mode:multiply}
+.tavola img,.tavola svg{transform:scale(1.04);transition:transform 1.2s cubic-bezier(.2,.7,.3,1)}
+.tavola .zona{fill:url(#luce);opacity:0;transition:opacity .9s ease;mix-blend-mode:multiply}
+.tavola .zona.on{opacity:1;animation:respiro 3.6s ease-in-out infinite}
+@keyframes respiro{0%,100%{opacity:.75}50%{opacity:1}}
+.tavola .fibra{fill:none;stroke:var(--pet);stroke-width:2;stroke-linecap:round;stroke-dasharray:6 10;opacity:0;transition:opacity .8s}
+.tavola .fibra.on{opacity:.55;animation:scorre 1.6s linear infinite}
+@keyframes scorre{to{stroke-dashoffset:-32}}
+.tavola .eti{font:700 22px/1 var(--h);letter-spacing:.14em;fill:var(--cupo);opacity:0;transition:opacity .6s}
+.tavola .eti.on{opacity:1}
+.tavola .linea{stroke:var(--cupo);stroke-width:1.6;opacity:0;transition:opacity .6s}
+.tavola .linea.on{opacity:1}
+.velo{position:absolute;inset:auto 0 0 0;height:46%;background:linear-gradient(rgba(243,235,220,0),var(--avorio) 62%)}
+.palco[data-f="massetere"] .tavola img,.palco[data-f="massetere"] .tavola svg{transform:scale(1.22) translate(-3%,-9%)}
+.palco[data-f="temporale"] .tavola img,.palco[data-f="temporale"] .tavola svg{transform:scale(1.18) translate(-1%,8%)}
+/* i pannelli che scorrono */
+.pannelli{position:relative;margin-top:-100svh;z-index:3}
+.pan{min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 22px calc(36px + env(safe-area-inset-bottom))}
+.carta{background:rgba(243,235,220,.9);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-top:2px solid var(--pet);padding:22px 4px 4px}
+.kick{font:700 11.5px/1 var(--h);letter-spacing:.2em;text-transform:uppercase;color:var(--pet);margin-bottom:12px}
+.pan h1{font-size:42px;font-weight:700}
+.pan h2{font-size:27px;font-weight:650}
+.pan p{margin-top:10px;font-size:16.5px}
+.pan p b{color:var(--nero);font-weight:500}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:22px;min-height:58px;border-radius:999px;background:var(--cupo);color:var(--avorio);font:700 17px/1 var(--h);text-decoration:none}
+.sotto{text-align:center;margin-top:10px;font:500 12.5px/1 var(--h);color:#7B807D}
+.misura{position:relative;z-index:3;background:var(--cupo);color:#E6E1D6;padding:56px 22px 46px}
+.misura .kick{color:var(--oro)}
+.misura h2{color:#fff;font-size:28px}
+.misura p{margin-top:10px;color:rgba(230,225,214,.8);font-size:16px}
+.eco{margin:24px -22px 0;aspect-ratio:540/307;overflow:hidden;position:relative}
+.eco video{width:100%;height:100%;object-fit:cover;filter:sepia(.35) hue-rotate(130deg) saturate(1.4) brightness(1.05)}
+.eco span{position:absolute;left:22px;bottom:12px;font:600 11px/1 var(--h);letter-spacing:.16em;color:var(--oro);text-transform:uppercase}
+.fondo{padding:24px 22px 46px;text-align:center;font-size:12.5px;color:rgba(230,225,214,.45);background:var(--cupo)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<header class="top"><img src="../assets/logo-medx.png" alt="MedX Clinic"><span>ROMA</span></header>
+<div class="palco" id="palco" data-f="tutti">
+  <div class="tavola" aria-hidden="true">
+    <img src="media/anatomia.jpg" alt="">
+    <svg viewBox="0 0 700 806" preserveAspectRatio="xMidYMid slice">
+      <defs><radialGradient id="luce"><stop offset="0" stop-color="#00A39A" stop-opacity=".75"/><stop offset=".6" stop-color="#00585C" stop-opacity=".35"/><stop offset="1" stop-color="#00585C" stop-opacity="0"/></radialGradient></defs>
+      <ellipse class="zona z-t" cx="345" cy="205" rx="130" ry="110"/>
+      <ellipse class="zona z-m" cx="395" cy="470" rx="70" ry="95"/>
+      <path class="fibra z-t" d="M270 150 Q330 230 372 330 M320 120 Q360 220 385 330 M380 120 Q395 220 398 330"/>
+      <path class="fibra z-m" d="M360 400 L380 545 M395 395 L405 548 M430 405 L425 540"/>
+      <line class="linea z-t" x1="300" y1="160" x2="200" y2="112"/><text class="eti z-t" x="182" y="100">TEMPORALE</text>
+      <line class="linea z-m" x1="370" y1="480" x2="250" y2="548"/><text class="eti z-m" x="182" y="578">MASSETERE</text>
+    </svg>
+    <div class="velo"></div>
+  </div>
+  <div class="pannelli">
+    <section class="pan" data-f="tutti"><div class="carta">
+      <div class="kick">MedX Clinic · Roma</div>
+      <h1>Sette domande sul tuo mal di testa</h1>
+      <p>Sono le domande che il dott. Armenti fa all’inizio di una valutazione. Dopo ognuna trovi <b>cosa c’entra quella cosa col mal di testa</b>.</p>
+      <a class="btn" href="#m">Comincia →</a><div class="sotto">7 domande · 2 minuti · niente dati per iniziare</div></div></section>
+    <section class="pan" data-f="entrambi" id="m"><div class="carta">
+      <div class="kick">Il mal di testa del mattino</div>
+      <h2>Lavorano anche durante il sonno</h2>
+      <p>I muscoli che chiudono la mandibola — il <b>massetere</b> e il <b>temporale</b> — lavorano anche durante il sonno. Quando la contrazione notturna è intensa, il dolore può essere già presente prima di alzarsi.</p></div></section>
+    <section class="pan" data-f="temporale"><div class="carta">
+      <div class="kick">Le tempie</div>
+      <h2>Un ventaglio sulla tempia</h2>
+      <p>Il muscolo <b>temporale</b> è un ventaglio che occupa la tempia e scende verso la mandibola. È uno dei muscoli della masticazione, e la sua tensione si sente proprio in quella zona.</p></div></section>
+    <section class="pan" data-f="massetere"><div class="carta">
+      <div class="kick">La mascella e le guance</div>
+      <h2>Fra i più potenti del corpo</h2>
+      <p>Il <b>massetere</b> è il muscolo che chiude la mandibola, e si trova esattamente lì. In rapporto alla sua dimensione è fra i più potenti del corpo.</p></div></section>
+  </div>
+</div>
+<section class="misura">
+  <div class="kick">La maggior parte non lo sa</div>
+  <h2>Si misura, invece di chiederla</h2>
+  <p>L’attività notturna dei muscoli masticatori avviene durante il sonno, quindi non se ne ha memoria. È la ragione per cui esistono modi di misurarla invece di chiederla.</p>
+  <div class="eco"><video src="media/eco.mp4" poster="media/eco.jpg" autoplay muted loop playsinline></video><span>Ecografia del massetere · MedX Clinic</span></div>
+</section>
+<div class="fondo">Bozza di stile · tavola anatomica che si accende allo scorrere · titoletti delle schede da approvare</div>
+<script>
+var palco=document.getElementById('palco'),zone={tutti:[],entrambi:['z-t','z-m'],temporale:['z-t'],massetere:['z-m']};
+function fuoco(f){palco.setAttribute('data-f',f);document.querySelectorAll('.tavola .zona,.tavola .fibra,.tavola .eti,.tavola .linea').forEach(function(el){var on=zone[f].some(function(c){return el.classList.contains(c)});el.classList.toggle('on',on)})}
+var io=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)fuoco(x.target.getAttribute('data-f'))})},{rootMargin:'-45% 0px -45% 0px'});
+document.querySelectorAll('.pan').forEach(function(p){io.observe(p)});
+setTimeout(function(){if(palco.getAttribute('data-f')==='tutti')fuoco('entrambi')},1400);
+</script>
+</body></html>

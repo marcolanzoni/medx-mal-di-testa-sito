@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow"><title>Stile 2 · Marmo MedX</title>
+<style>
+@font-face{font-family:"Plus Jakarta Sans";font-weight:200 800;font-display:swap;src:url(../assets/fonts/jakarta.woff2) format("woff2")}
+@font-face{font-family:"Roboto";font-weight:400 500;font-display:swap;src:url(../assets/fonts/roboto.woff2) format("woff2")}
+@font-face{font-family:"Bodoni Moda";font-weight:400 700;font-display:swap;src:url(../assets/fonts/bodoni.woff2) format("woff2")}
+:root{--cupo:#0A2829;--pet:#00585C;--oro:#B79E6C;--oro2:#C1AC80;--carta:#F4F0E8;--nero:#14201F;--h:"Plus Jakarta Sans",system-ui,sans-serif;--b:Roboto,system-ui,sans-serif;--s:"Bodoni Moda",Georgia,serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--carta) url(media/marmo-chiaro.jpg) top center/cover fixed;color:#2A3332;font:400 17px/1.6 var(--b);overflow-x:hidden}
+.top{display:flex;align-items:center;justify-content:space-between;padding:calc(20px + env(safe-area-inset-top)) 24px 0}
+.top img{height:17px;filter:brightness(0);opacity:.8}.top span{font:600 11px/1 var(--h);letter-spacing:.24em;color:var(--oro)}
+.hero{position:relative;padding:22px 24px 30px;min-height:calc(100svh - 40px);display:flex;flex-direction:column}
+.ritratto{position:relative;width:74%;margin:14px auto 0}
+.arco{position:relative;width:100%;aspect-ratio:3/3.6;border-radius:999px 999px 6px 6px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(10,40,41,.55);clip-path:inset(100% 0 0 0 round 999px 999px 6px 6px);animation:apre 1.3s cubic-bezier(.7,0,.2,1) .15s forwards}
+@keyframes apre{to{clip-path:inset(0 0 0 0 round 999px 999px 6px 6px)}}
+.arco img{width:100%;height:100%;object-fit:cover;object-position:50% 15%;transform:scale(1.15);animation:respira 14s ease-out forwards}
+@keyframes respira{to{transform:scale(1.02)}}
+.cornice{position:absolute;inset:-10px;border:1px solid var(--oro);border-radius:999px 999px 8px 8px;pointer-events:none;opacity:0;animation:appare 1s ease 1.2s forwards}
+.x{position:absolute;right:-18px;bottom:26px;width:56px;height:56px;border-radius:50%;background:var(--cupo);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px -8px rgba(0,0,0,.4);opacity:0;animation:appare .8s ease 1.4s forwards}
+.x img{width:26px}
+@keyframes appare{to{opacity:1}}
+.firma-medico{text-align:center;margin-top:16px;font:500 12px/1.4 var(--h);letter-spacing:.14em;text-transform:uppercase;color:var(--oro)}
+h1{font-family:var(--s);font-weight:500;font-size:40px;line-height:1.04;color:var(--nero);text-align:center;margin-top:16px;letter-spacing:-.01em}
+h1 em{font-style:italic;color:var(--pet)}
+.lead{text-align:center;margin-top:12px;font-size:16.5px}
+.lead b{color:var(--nero);font-weight:500}
+.btn{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:22px;min-height:58px;border-radius:999px;background:var(--cupo);color:#F4F0E8;font:600 16.5px/1 var(--h);text-decoration:none;box-shadow:0 14px 30px -14px rgba(10,40,41,.7)}
+.btn i{width:28px;height:28px;border-radius:50%;background:var(--oro2);color:var(--cupo);display:flex;align-items:center;justify-content:center;font-style:normal}
+.sotto{text-align:center;margin-top:10px;font:500 12.5px/1 var(--h);color:#7A7F7C;letter-spacing:.03em}
+.filo{display:flex;align-items:center;gap:14px;margin:52px 24px 0;color:var(--oro);font:600 11px/1 var(--h);letter-spacing:.24em;text-transform:uppercase}
+.filo::before,.filo::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--oro),transparent)}
+/* la domanda come pagina di una cartella */
+.foglio{margin:26px 18px 0;background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(183,158,108,.35);border-radius:6px;padding:28px 22px 26px;box-shadow:0 30px 50px -36px rgba(10,40,41,.45)}
+.num{font:400 15px/1 var(--s);color:var(--oro);letter-spacing:.06em}
+.num b{font-size:42px;color:var(--nero);font-weight:400}
+.foglio h2{font:500 26px/1.15 var(--s);color:var(--nero);margin-top:10px}
+.opz{display:flex;align-items:center;gap:14px;width:100%;padding:16px 0;border:0;border-bottom:1px solid rgba(20,32,31,.1);background:none;font:400 17px/1.35 var(--b);color:var(--nero);text-align:left;cursor:pointer}
+.opz:first-of-type{margin-top:16px;border-top:1px solid rgba(20,32,31,.1)}
+.opz::before{content:"";width:18px;height:18px;border-radius:50%;border:1px solid var(--oro);flex-shrink:0;transition:all .2s}
+.opz.on{color:var(--pet);font-weight:500}.opz.on::before{background:var(--oro);box-shadow:inset 0 0 0 4px #fff}
+.tavola{position:relative;margin:24px -22px 0;aspect-ratio:400/330;overflow:hidden;background:#EFE6D4}
+.tavola img{width:100%;height:100%;object-fit:cover;object-position:60% 22%;mix-blend-mode:multiply}
+.scheda h3{font:500 22px/1.2 var(--s);color:var(--nero);margin-top:20px}
+.scheda p{margin-top:8px;font-size:16px}
+.scheda .eti{margin-top:22px;font:700 11px/1 var(--h);letter-spacing:.2em;text-transform:uppercase;color:var(--oro)}
+.fondo{padding:40px 24px 50px;text-align:center;font-size:12.5px;color:#8A8E8A}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}.arco{clip-path:none}.cornice,.x{opacity:1}}
+</style></head><body>
+<header class="top"><img src="../assets/logo-medx.png" alt="MedX Clinic"><span>ROMA</span></header>
+<section class="hero">
+  <div class="ritratto"><div class="cornice"></div><div class="arco"><img src="media/dottore-scrive.jpg" alt="Il dott. Andrea Armenti"></div><div class="x"><img src="media/x-oro.png" alt=""></div></div>
+  <div class="firma-medico">Le domande del dott. Andrea Armenti</div>
+  <h1>Sette domande sul tuo <em>mal di testa</em></h1>
+  <p class="lead">Sono le domande che il dott. Armenti fa all’inizio di una valutazione. Dopo ognuna trovi <b>cosa c’entra quella cosa col mal di testa</b>.</p>
+  <a class="btn" href="#domanda">Comincia <i>→</i></a>
+  <div class="sotto">7 domande · 2 minuti · niente dati per iniziare</div>
+</section>
+<div class="filo">Domanda 1 di 7</div>
+<section class="foglio" id="domanda">
+  <div class="num"><b>01</b> / 07</div>
+  <h2>A che momento della giornata senti più spesso il mal di testa?</h2>
+  <button class="opz on">Al mattino, appena sveglio</button><button class="opz">A metà mattina o nel pomeriggio</button><button class="opz">La sera, dopo una giornata intensa</button><button class="opz">Non ha un orario preciso</button>
+  <div class="tavola"><img src="media/anatomia.jpg" alt="Tavola anatomica: temporale e massetere"></div>
+  <div class="scheda"><div class="eti">Cosa c’entra</div><h3>Il mal di testa del mattino</h3><p>I muscoli che chiudono la mandibola — il <b>massetere</b> e il <b>temporale</b> — lavorano anche durante il sonno. Quando la contrazione notturna è intensa, il dolore può essere già presente prima di alzarsi.</p></div>
+</section>
+<div class="fondo">Bozza di stile · marmo, oro e foto ufficiale dal sito medxclinic.it</div>
+<script>document.querySelectorAll('.opz').forEach(function(b){b.onclick=function(){document.querySelectorAll('.opz').forEach(function(x){x.classList.remove('on')});b.classList.add('on')}})</script>
+</body></html>
