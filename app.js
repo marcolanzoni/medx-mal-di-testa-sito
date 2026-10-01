@@ -144,14 +144,37 @@
         '<button class="btn" type="button" data-azione="comincia">' + (ripresa ? 'Riprendi da dove eri' : 'Comincia') + FRECCIA + '</button>' +
         (ripresa ? '<button class="btn vuoto" type="button" data-azione="ricomincia">Ricomincia da capo</button>' : '<div class="quanto"><span>7 domande</span><span>2 minuti</span><span>niente dati per iniziare</span></div>') +
         '<i class="giu" aria-hidden="true"></i></div></section>' +
-        '<div class="dopo-piega">' +
-        '<div class="blocco"><h3>Cosa ricevi alla fine</h3>' +
-        '<p class="piccolo" style="margin-top:6px">Le tue risposte in ordine, e accanto <b>le cinque cose che si guardano in clinica</b> per capire se un mal di testa nasce dai muscoli.</p>' +
-        '<p class="piccolo">Il confronto lo fai tu: <b>noi non ti diciamo cosa hai</b>, quello si fa guardando una persona, non uno schermo.</p>' +
-        '<ul class="elenco"><li><b>7 domande in 2 minuti</b>, e finisce in una volta sola</li><li><b>Niente dati per iniziare</b></li><li><b>Le risposte restano sul tuo telefono</b> finché non decidi tu</li></ul></div>' +
-        '<div class="blocco medico"><img src="assets/armenti.jpg" alt="Il dott. Andrea Armenti" width="56" height="56" loading="lazy">' +
+        // La pagina lunga (1 ottobre): spiega prima del test, solo con testi già approvati
+        // (schede delle domande, apertura v4) e materiale vero della clinica.
+        '<div class="lunga">' +
+        // 1 · i muscoli
+        '<section class="sez"><div class="occhiello">Il mal di testa del mattino</div>' +
+        '<figure class="tavola svela-tavola" aria-label="Tavola anatomica: il muscolo temporale e il massetere"><img src="img/anatomia.jpg" alt="" width="700" height="806" loading="lazy">' +
+        '<svg viewBox="0 0 400 360" aria-hidden="true"><circle class="punto" cx="196" cy="77" r="3.5"/><path class="tratto" d="M196 77 L46 40"/><text x="12" y="31">TEMPORALE</text>' +
+        '<circle class="punto due" cx="222" cy="242" r="3.5"/><path class="tratto due" d="M222 242 L56 284"/><text class="due" x="12" y="302">MASSETERE</text></svg></figure>' +
+        '<p class="sez-testo">I muscoli che chiudono la mandibola — il <b>massetere</b> e il <b>temporale</b> — lavorano anche durante il sonno. Quando la contrazione notturna è intensa, il dolore può essere già presente prima di alzarsi.</p>' +
+        '<h3 class="sez-tit">Le tempie</h3><p class="sez-testo">Il muscolo <b>temporale</b> è un ventaglio che occupa la tempia e scende verso la mandibola. È uno dei muscoli della masticazione, e la sua tensione si sente proprio in quella zona.</p>' +
+        '<h3 class="sez-tit">La mascella e le guance</h3><p class="sez-testo">Il <b>massetere</b> è il muscolo che chiude la mandibola, e si trova esattamente lì. In rapporto alla sua dimensione è fra i più potenti del corpo.</p></section>' +
+        // 2 · si misura
+        '<section class="sez"><div class="occhiello">La maggior parte non lo sa</div>' +
+        '<p class="sez-testo">L’attività notturna dei muscoli masticatori avviene durante il sonno, quindi non se ne ha memoria. È la ragione per cui esistono modi di misurarla invece di chiederla.</p>' +
+        '<figure class="clip eco"><video data-src="img/eco.mp4" poster="img/eco.jpg" muted loop playsinline preload="none" aria-hidden="true"></video><figcaption>Ecografia del massetere · MedX Clinic</figcaption></figure>' +
+        '<figure class="clip"><video data-src="img/mappa.mp4" poster="img/mappa.jpg" muted loop playsinline preload="none" aria-hidden="true"></video><figcaption>L’analisi elettromiografica · MedX Clinic</figcaption></figure></section>' +
+        // 3 · il dottore te lo spiega (parte solo se la persona lo tocca)
+        '<section class="sez"><div class="occhiello">Il dott. Andrea Armenti, in un minuto</div>' +
+        '<figure class="reel"><button type="button" class="reel-copertina" data-azione="reel" aria-label="Guarda il video del dott. Armenti, un minuto"><img src="img/dottore.jpg" alt="" loading="lazy"><span class="play" aria-hidden="true"></span><span class="reel-eti">Guarda · 1 minuto</span></button></figure></section>' +
+        // 4 · cosa ricevi
+        '<section class="sez"><h2 class="sez-h2">Cosa ricevi alla fine</h2>' +
+        '<p class="sez-testo">Le tue risposte in ordine, e accanto <b>le cinque cose che si guardano in clinica</b> per capire se un mal di testa nasce dai muscoli.</p>' +
+        '<p class="sez-testo">Il confronto lo fai tu: <b>noi non ti diciamo cosa hai</b>, quello si fa guardando una persona, non uno schermo.</p>' +
+        '<ul class="elenco"><li><b>7 domande in 2 minuti</b>, e finisce in una volta sola</li><li><b>Niente dati per iniziare</b></li><li><b>Le risposte restano sul tuo telefono</b> finché non decidi tu</li></ul>' +
+        '<button class="btn" type="button" data-azione="comincia" style="margin-top:22px">' + (ripresa ? 'Riprendi da dove eri' : 'Comincia') + FRECCIA + '</button></section>' +
+        // 5 · il dottore e la clinica
+        '<section class="sez"><div class="medico"><img src="assets/armenti.jpg" alt="Il dott. Andrea Armenti" width="64" height="64" loading="lazy">' +
         '<div><h3>Dott. Andrea Armenti</h3><p class="piccolo grigio" style="margin-top:2px">Specialista in Chirurgia Plastica, Ricostruttiva ed Estetica · Dottorato di ricerca in Chirurgia Rigenerativa, Università di Tor Vergata</p></div></div>' +
-        '<div class="blocco"><p class="piccolo grigio">Se preferisci saltare le domande e vedere <b>come funziona una valutazione</b> — quanto dura, quanto costa, cosa si sente — <button type="button" class="link" data-azione="salta">la pagina è qui</button>.</p></div>' +
+        '<figure class="ambiente" style="margin-top:22px"><img src="img/clinica.jpg" alt="La reception di MedX Clinic in Corso Francia" width="1086" height="900" loading="lazy"></figure>' +
+        '<p class="nota-foto">MedX Clinic · Corso Francia 221, Roma</p></section>' +
+        '<p class="piccolo grigio" style="margin-top:30px">Se preferisci saltare le domande e vedere <b>come funziona una valutazione</b> — quanto dura, quanto costa, cosa si sente — <button type="button" class="link" data-azione="salta">la pagina è qui</button>.</p>' +
         '</div>' +
         firma(true),
       piede: ''
@@ -400,6 +423,12 @@
   // le cinque cose entrano allo scorrere, una volta sola (niente conteggi automatici)
   var osserva = null;
   function svela() {
+    var tv = $corpo.querySelectorAll('.svela-tavola');
+    if (tv.length && window.IntersectionObserver) { var ot = new IntersectionObserver(function (v) { v.forEach(function (x) { if (x.isIntersecting) { x.target.classList.add('via'); ot.unobserve(x.target); } }); }, { rootMargin: '0px 0px -20% 0px' }); tv.forEach(function (x) { ot.observe(x); }); }
+    else tv.forEach(function (x) { x.classList.add('via'); });
+    // i video lontani dal primo schermo si caricano solo quando ci si arriva
+    var vd = $corpo.querySelectorAll('video[data-src]');
+    if (vd.length && window.IntersectionObserver) { var ov = new IntersectionObserver(function (v) { v.forEach(function (x) { if (x.isIntersecting) { var e = x.target; e.src = e.getAttribute('data-src'); e.removeAttribute('data-src'); var pr = e.play(); if (pr && pr.catch) pr.catch(function () {}); ov.unobserve(e); } }); }, { rootMargin: '200px 0px' }); vd.forEach(function (x) { ov.observe(x); }); }
     var el = $corpo.querySelectorAll('.svela'); if (!el.length) return;
     if (!window.IntersectionObserver || matchMedia('(prefers-reduced-motion: reduce)').matches) { el.forEach(function (x) { x.classList.add('visto'); }); return; }
     if (osserva) osserva.disconnect();
@@ -430,6 +459,7 @@
     else if (a === 'vai') vai(b.getAttribute('data-passo'));
     else if (a === 'prenota') { ev('cta_prenota', null, true); vai('dati'); }
     else if (a === 'whatsapp') ev('cta_whatsapp', null, true);
+    else if (a === 'reel') { var fg = b.parentNode; fg.innerHTML = '<video src="img/reel-dottore.mp4" controls autoplay playsinline></video>'; }
     else if (a === 'stampa') { ev('stampa'); window.print(); }
     else if (a === 'stampa-niente') { ev('cta_niente', null, true); ev('stampa'); stampaRiepilogo(); }
   });
