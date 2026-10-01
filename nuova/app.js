@@ -163,12 +163,26 @@
       '</svg><figcaption>Tavola illustrata</figcaption></figure>';
   }
 
+  // Domanda 2 («Dove»): si risponde anche toccando la testa. Le zone sono le
+  // stesse risposte della lista (stesso data-k), che resta sotto per chi preferisce.
+  function mappaTesta(scelte) {
+    var Z = [[0, 335, 215, 105, 'TEMPIE', 300, 175], [1, 505, 455, 90, 'NUCA', 478, 415], [2, 205, 315, 70, 'OCCHI', 110, 275], [3, 385, 480, 90, 'MASCELLA', 300, 560]];
+    return '<figure class="testa-tocca"><img src="img/anatomia.jpg" alt="" width="700" height="806">' +
+      '<svg viewBox="0 0 700 806" preserveAspectRatio="xMidYMid meet" aria-hidden="true">' +
+      Z.map(function (z) {
+        return '<g class="zona" data-azione="scegli" data-k="' + z[0] + '" data-on="' + (scelte.indexOf(z[0]) >= 0) + '">' +
+          '<circle class="alone" cx="' + z[1] + '" cy="' + z[2] + '" r="' + z[3] + '"/><circle class="onda" cx="' + z[1] + '" cy="' + z[2] + '" r="18"/>' +
+          '<circle class="punto" cx="' + z[1] + '" cy="' + z[2] + '" r="15"/><text x="' + z[5] + '" y="' + z[6] + '">' + z[4] + '</text></g>';
+      }).join('') + '</svg><figcaption>Tocca la testa, o scegli qui sotto</figcaption></figure>';
+  }
+
   // Un video vero della clinica sotto alcune domande: dipende dal NUMERO della domanda, mai dalla risposta.
-  var CLIP = { 1: ['mappa', 'L’analisi elettromiografica · MedX Clinic'], 2: ['calibra', 'La misurazione dei muscoli · MedX Clinic'], 3: ['eco', 'Ecografia del massetere · MedX Clinic'] };
+  var CLIP = { 4: ['mappa', 'L’analisi elettromiografica · MedX Clinic'], 2: ['calibra', 'La misurazione dei muscoli · MedX Clinic'], 3: ['eco', 'Ecografia del massetere · MedX Clinic'] };
   V.domanda = function () {
     var i = Math.min(Math.max(S.i, 0), N - 1), d = D[i], scelte = risposta(i), multi = (d.max || 1) > 1;
     var s = '<div class="domanda"><h2 tabindex="-1" id="dq">' + h(d.q) + '</h2>';
     if (d.sotto) s += '<p class="sotto">' + h(d.sotto) + '</p>';
+    if (i === 1) s += mappaTesta(scelte);
     s += '<div class="opzioni" role="' + (multi ? 'group' : 'radiogroup') + '" aria-labelledby="dq">';
     d.o.forEach(function (o, k) {
       var on = scelte.indexOf(k) >= 0;
