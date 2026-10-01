@@ -6,8 +6,9 @@ window.MX = {
   // Schermata 07 · le domande pratiche. null = buco vero: si vede come
   // "da confermare" e il lancio delle inserzioni resta fermo finché c'è.
   pratiche: {
-    durata: null,     // es. "Circa 60 minuti." — dalla segreteria
-    prezzo: null,     // es. "150 €. Comprende ..." — dalla segreteria
+    // Niente tempi precisi (Marco, 1 ottobre).
+    durata: 'Il tempo che serve a guardare i muscoli e a spiegarti cosa c’è. Non è una visita di corsa.',
+    prezzo: 'La prima visita costa 90 €. Se poi decidi di fare il trattamento, i 90 € vengono scalati.',
     sensazione: null  // parole del dott. Armenti
   },
 

@@ -139,8 +139,8 @@
         // Primo schermo: il video vero della clinica (elettromiografia), titolo, un'azione.
         '<section class="eroe"><video src="img/sensori.mp4" poster="img/sensori.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video><div class="velo"></div>' +
         '<div class="eroe-in"><div class="occhiello">MedX Clinic · Roma</div>' +
-        '<h1 tabindex="-1">Sette domande sul tuo mal di testa</h1>' +
-        '<p class="lead">Sono le domande che il dott. Armenti fa all’inizio di una valutazione. Dopo ognuna trovi <b>cosa c’entra quella cosa col mal di testa</b>.</p>' +
+        '<h1 tabindex="-1">Da dove cominceresti a raccontare il tuo mal di testa?</h1>' +
+        '<p class="lead">Il dott. Armenti parte da queste sette domande. Puoi farle anche tu, in due minuti. Dopo ognuna trovi <b>cosa c’entra quella cosa col mal di testa</b>.</p>' +
         '<button class="btn" type="button" data-azione="comincia">' + (ripresa ? 'Riprendi da dove eri' : 'Comincia') + FRECCIA + '</button>' +
         (ripresa ? '<button class="btn vuoto" type="button" data-azione="ricomincia">Ricomincia da capo</button>' : '<div class="quanto"><span>7 domande</span><span>2 minuti</span><span>niente dati per iniziare</span></div>') +
         '<i class="giu" aria-hidden="true"></i></div></section>' +
