@@ -29,7 +29,7 @@ b,strong{font-weight:500;color:#fff}
 body[data-passo="apertura"] .testata{position:absolute;left:0;right:0;background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none}
 .testata-in{max-width:var(--largo);margin:0 auto;height:56px;display:flex;align-items:center;gap:8px;padding:0 var(--g)}
 .logo{height:18px;width:auto;display:block}
-.luogo{margin-left:auto;font-family:var(--h);font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--oro)}
+.luogo{margin-left:auto;font-family:var(--h);font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--oro)}
 .indietro{width:44px;height:44px;margin-left:-14px;border:0;background:none;color:var(--testo);display:flex;align-items:center;justify-content:center;border-radius:10px;cursor:pointer}
 .indietro[hidden]{display:none}
 .avanz{max-width:var(--largo);margin:0 auto;padding:0 var(--g) 12px}
@@ -48,7 +48,7 @@ body[data-passo="apertura"] .testata{position:absolute;left:0;right:0;background
 .piede:empty{display:none}
 
 /* tipografia */
-.occhiello{font:700 11.5px/1.2 var(--h);letter-spacing:.2em;text-transform:uppercase;color:var(--oro);margin-bottom:14px}
+.occhiello{font:700 12px/1.25 var(--h);letter-spacing:.2em;text-transform:uppercase;color:var(--oro);margin-bottom:14px}
 h1,h2,h3{font-family:var(--h);color:#fff;outline:none;letter-spacing:-.025em}
 h1{font-size:44px;line-height:1.03;font-weight:700}
 h2{font-size:29px;line-height:1.1;font-weight:700}
@@ -73,13 +73,15 @@ p+p{margin-top:10px}
 .btn+.btn{margin-top:10px}
 .sotto-btn{text-align:center;font:500 12.5px/1.45 var(--h);color:var(--tenue);margin-top:10px}
 .link{background:none;border:0;padding:6px 0;color:var(--oro);font-weight:500;cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px;font-size:15.5px;min-height:44px}
+/* un link dentro una frase non deve spaccare la riga: resta alto come il testo */
+p .link{min-height:0;padding:0;font-size:inherit;line-height:inherit;vertical-align:baseline}
 
 /* ---------- apertura: il video della clinica a tutto schermo ---------- */
 body[data-passo="apertura"] .corpo{padding-top:0;max-width:none}
 .eroe{position:relative;margin:0 calc(-1 * var(--g));min-height:100vh;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;background:#0d2526}
 .eroe video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.06);animation:dentro 9s ease-out forwards}
 @keyframes dentro{to{transform:scale(1)}}
-.eroe .velo{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,29,30,.7) 0%,rgba(7,29,30,0) 20%,rgba(7,29,30,.55) 40%,rgba(7,29,30,.92) 60%,var(--fondo) 100%)}
+.eroe .velo{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,29,30,.7) 0%,rgba(7,29,30,0) 18%,rgba(7,29,30,.72) 36%,rgba(7,29,30,.94) 52%,var(--fondo) 100%)}
 .eroe-in{position:relative;z-index:2;width:100%;max-width:var(--largo);margin:0 auto;padding:0 var(--g) calc(26px + env(safe-area-inset-bottom))}
 .eroe .btn{margin-top:24px}
 .quanto{display:flex;justify-content:center;flex-wrap:wrap;gap:4px 16px;margin-top:14px;font:500 12.5px/1.2 var(--h);color:var(--tenue)}
@@ -135,7 +137,7 @@ body[data-passo="apertura"] .firma{max-width:var(--largo);margin-left:auto;margi
 .opz.multi[aria-checked="true"] .cx{box-shadow:none;background:var(--oro) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4L18 8' fill='none' stroke='%230A2829' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/15px no-repeat}
 
 /* domanda 2: la testa da toccare */
-.testa-tocca{position:relative;margin:20px calc(-1 * var(--g)) 0;background:#F4EFE4;aspect-ratio:700/806;max-height:62vh;overflow:hidden}
+.testa-tocca{position:relative;margin:20px calc(-1 * var(--g)) 0;background:#F4EFE4;height:46vh;overflow:hidden}
 .testa-tocca img,.testa-tocca svg{position:absolute;inset:0;width:100%;height:100%}
 .testa-tocca img{object-fit:contain;mix-blend-mode:multiply}
 .testa-tocca .zona{cursor:pointer}
@@ -147,7 +149,7 @@ body[data-passo="apertura"] .firma{max-width:var(--largo);margin-left:auto;margi
 .testa-tocca .zona[data-on="true"] .alone{opacity:.42}
 .testa-tocca .zona[data-on="true"] .punto{fill:var(--pet);stroke:#fff}
 .testa-tocca .zona[data-on="true"] .onda{display:none}
-.testa-tocca figcaption{position:absolute;left:0;right:0;bottom:10px;text-align:center;font:600 11px/1 var(--h);letter-spacing:.14em;text-transform:uppercase;color:rgba(10,40,41,.6)}
+.testa-tocca figcaption{position:absolute;left:0;right:0;bottom:0;padding:7px 0;text-align:center;font:600 12px/1 var(--h);letter-spacing:.12em;text-transform:uppercase;color:rgba(10,40,41,.8);background:rgba(244,239,228,.9)}
 
 /* scheda */
 .scheda{margin-top:24px;animation:sale .4s var(--entra)}
@@ -163,7 +165,36 @@ body[data-passo="apertura"] .firma{max-width:var(--largo);margin-left:auto;margi
 .clip::after{content:"";position:absolute;inset:0;background:linear-gradient(var(--fondo),rgba(7,29,30,0) 22%,rgba(7,29,30,0) 70%,var(--fondo))}
 .clip.eco{aspect-ratio:540/307}
 .clip.eco video{filter:sepia(.35) hue-rotate(130deg) saturate(1.4) brightness(1.05)}
-.clip figcaption{position:absolute;z-index:2;left:var(--g);bottom:12px;font:600 11px/1 var(--h);letter-spacing:.14em;text-transform:uppercase;color:var(--oro)}
+.clip figcaption{position:absolute;z-index:2;left:var(--g);right:var(--g);bottom:12px;font:600 12px/1.3 var(--h);letter-spacing:.1em;text-transform:uppercase;color:var(--oro)}
+
+/* tavola di Marco nella landing lunga: carta, muscoli che si accendono, linee che si disegnano */
+.tavola2{margin:22px calc(-1 * var(--g)) 0;position:relative;background:#EFE6D3;aspect-ratio:1544/1400;overflow:hidden}
+.t2-quadro{position:absolute;inset:0;transform-origin:52% 48%}
+.t2-quadro img{position:absolute;display:block}
+.t2-base{inset:0;width:100%;height:100%}
+.t2-m{opacity:0;filter:drop-shadow(0 0 0 rgba(0,88,92,0))}
+.t2-temp{left:32.51%;top:21.64%;width:39.44%}
+.t2-mass{left:32.71%;top:56.57%;width:17.49%}
+.tavola2 svg{position:absolute;inset:0;width:100%;height:100%}
+.tavola2 .tratto{stroke:#0A2829;stroke-width:3;fill:none;stroke-dasharray:620;stroke-dashoffset:620}
+.tavola2 .punto{fill:#00585C;opacity:0}
+.tavola2 .anello{fill:none;stroke:#00585C;stroke-width:3;opacity:0;transform-box:fill-box;transform-origin:center}
+.tavola2 text{font:700 46px/1 var(--h);letter-spacing:.08em;fill:#0A2829;opacity:0}
+.tavola2.via .t2-quadro{animation:t2zoom 16s cubic-bezier(.2,.6,.3,1) forwards}
+.tavola2.via .t2-temp{animation:t2accendi 1.4s ease .5s forwards,t2respira 4s ease-in-out 2.4s infinite}
+.tavola2.via .t2-mass{animation:t2accendi 1.4s ease 2.1s forwards,t2respira 4s ease-in-out 4s infinite}
+.tavola2.via .tratto{animation:traccia 1s ease .9s forwards}
+.tavola2.via .tratto.due{animation-delay:2.5s}
+.tavola2.via .punto{animation:appare .3s ease 1.8s forwards}
+.tavola2.via .punto.due{animation-delay:3.4s}
+.tavola2.via .anello{animation:t2onda 2.2s ease-out 1.9s infinite}
+.tavola2.via .anello.due{animation-delay:3.5s}
+.tavola2.via text{animation:appare .5s ease 1.6s forwards}
+.tavola2.via text.due{animation-delay:3.2s}
+@keyframes t2zoom{from{transform:scale(1)}to{transform:scale(1.07)}}
+@keyframes t2accendi{from{opacity:0}to{opacity:1;filter:drop-shadow(0 0 14px rgba(0,120,124,.35))}}
+@keyframes t2respira{0%,100%{opacity:1}50%{opacity:.62}}
+@keyframes t2onda{from{opacity:.8;transform:scale(1)}to{opacity:0;transform:scale(3.2)}}
 
 /* tavola anatomica (domanda 1): un foglio d'avorio acceso sul fondo scuro */
 .tavola{margin:26px calc(-1 * var(--g)) 0;position:relative;background:#F4EFE4;aspect-ratio:400/360;overflow:hidden;animation:sale .5s var(--entra)}
@@ -177,7 +208,7 @@ body[data-passo="apertura"] .firma{max-width:var(--largo);margin-left:auto;margi
 .tavola text.due{animation-delay:1.15s}
 @keyframes traccia{to{stroke-dashoffset:0}}
 @keyframes appare{to{opacity:1}}
-.tavola figcaption{position:absolute;right:12px;bottom:8px;font:500 11px/1 var(--h);color:rgba(10,40,41,.5)}
+.tavola figcaption{position:absolute;right:10px;bottom:8px;padding:3px 6px;background:#F4EFE4;font:500 12px/1 var(--h);color:rgba(10,40,41,.78)}
 
 /* le altre schede */
 .biblio{margin-top:32px;padding-top:20px;border-top:1px solid var(--riga);scroll-margin-bottom:110px}
@@ -224,7 +255,7 @@ body[data-passo="criterio"] .piede{background:linear-gradient(to top,rgba(7,29,3
 .ambiente{position:relative;margin:22px calc(-1 * var(--g)) 0;aspect-ratio:16/10;overflow:hidden;background:#0d2526}
 .ambiente img{width:100%;height:100%;object-fit:cover;object-position:50% 55%;display:block}
 .ambiente::after{content:"";position:absolute;inset:0;background:linear-gradient(var(--fondo),rgba(7,29,30,0) 25%,rgba(7,29,30,0) 65%,var(--fondo))}
-.nota-foto{font:600 11px/1 var(--h);letter-spacing:.14em;text-transform:uppercase;color:var(--oro);margin-top:-8px;position:relative}
+.nota-foto{font:600 12px/1.3 var(--h);letter-spacing:.1em;text-transform:uppercase;color:var(--oro);margin-top:-8px;position:relative}
 .fisarmonica{margin-top:18px;border-top:1px solid var(--riga)}
 .fisarmonica details{border-bottom:1px solid var(--riga)}
 .fisarmonica summary{list-style:none;display:flex;align-items:center;gap:12px;min-height:60px;padding:14px 0;cursor:pointer;font:650 17px/1.3 var(--h);color:#fff}
@@ -239,7 +270,7 @@ body[data-passo="criterio"] .piede{background:linear-gradient(to top,rgba(7,29,3
 .porta-uno h3{color:var(--cupo);font-size:23px;font-weight:700}
 .porta-uno p{margin-top:8px;font-size:15.5px}
 .porta-uno .btn{margin-top:20px;background:var(--cupo);color:var(--crema)}
-.o-wa{text-align:center;margin:12px 0 2px;font:500 12.5px/1 var(--h);color:#6A706D}
+.o-wa{text-align:center;margin:12px 0 2px;font:500 12.5px/1 var(--h);color:#565C59}
 .porta-uno .btn.vuoto.scuro{margin-top:10px;background:transparent;color:var(--cupo);border:1px solid rgba(10,40,41,.35);box-shadow:none}
 a.btn{text-decoration:none}
 .porta-due{margin-top:14px;padding:24px 22px;border-radius:20px;border:1px solid var(--riga);background:var(--vetro)}
@@ -272,20 +303,37 @@ form .btn{margin-top:20px}
 .quel-giorno p{margin-top:4px;color:var(--tenue)}
 
 /* piè di pagina */
-.firma{margin-top:48px;font-size:12.5px;color:rgba(230,226,216,.5);line-height:1.6}
-.firma a,.firma .link{color:rgba(230,226,216,.6)!important}
+.firma{margin-top:48px;font-size:13px;color:rgba(230,226,216,.66);line-height:1.6}
+.firma p+p{margin-top:6px}
+.firma .firma-medici{color:rgba(230,226,216,.82)}
+.firma a,.firma .link{color:rgba(230,226,216,.78)!important}
+/* link del piè di pagina: ognuno alto 44 px, facili da toccare */
+.firma-link{display:flex;flex-wrap:wrap;gap:0 18px;margin-top:10px!important}
+.firma-link a,.firma-link .link{display:inline-flex;align-items:center;min-height:44px;padding:0;font-size:13px;text-decoration:underline;text-underline-offset:3px}
+
+/* banner cookie: petrolio, due bottoni dello stesso peso */
+.consenso{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:0 12px calc(12px + env(safe-area-inset-bottom))}
+.consenso[hidden]{display:none}
+.consenso-in{max-width:var(--largo);margin:0 auto;padding:16px 18px;border-radius:18px;background:var(--cupo);border:1px solid rgba(193,172,128,.35);box-shadow:0 -10px 40px rgba(0,0,0,.45);font-size:14.5px;line-height:1.5;color:rgba(230,226,216,.9)}
+.consenso-in a{color:var(--oro);white-space:nowrap}
+.consenso-bott{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.consenso-bott .btn{min-height:48px;font-size:15.5px;padding:10px 12px}
+.consenso-bott .btn+.btn{margin-top:0}
+body.con-banner .piede{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
 .firma .fine{border-top:1px solid var(--riga);padding-top:16px}
 
 @media (min-width:700px){
   h1{font-size:56px}
   .corpo{padding-top:44px}
-  .clip,.tavola,.ambiente{margin-left:0;margin-right:0;border-radius:16px}
+  .eroe video{object-position:50% 30%}
+  .logo{height:22px}
+  .clip,.tavola,.tavola2,.ambiente{margin-left:0;margin-right:0;border-radius:16px}
 }
 
 /* stampa: esce solo il documento col criterio, su bianco */
 .solo-stampa{display:none}
 @media print{
-  .testata,.piede,.firma,.no-stampa,.salta{display:none!important}
+  .testata,.piede,.firma,.no-stampa,.salta,.consenso{display:none!important}
   html,body{background:#fff!important;color:#000}
   .corpo{max-width:none;padding:0}
   .documento{box-shadow:none;margin:0;padding:0;background:#fff}
@@ -295,5 +343,6 @@ form .btn{margin-top:20px}
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
   .tavola .tratto,.tavola .punto,.tavola text{opacity:1;stroke-dashoffset:0}
+  .tavola2 .tratto,.tavola2 .punto,.tavola2 text,.t2-m{opacity:1;stroke-dashoffset:0}
   .svela{opacity:1;transform:none}
 }

@@ -9,8 +9,9 @@
  *  - non manda le risposte da nessuna parte. Restano nel telefono
  *    (localStorage) e se ne vanno solo se la persona spunta da sola
  *    «allega le mie risposte» prima di prenotare;
- *  - non carica niente di esterno finché la persona non lo chiede
- *    Il pixel Meta riceve solo tre passaggi anonimi (vedi «pixel Meta»).
+ *  - non carica niente di esterno finché la persona non lo chiede.
+ *    Il pixel Meta parte SOLO dopo «Accetto» nel banner (vedi «pixel Meta»)
+ *    e riceve solo quattro passaggi senza dettagli.
  */
 (function () {
   'use strict';
@@ -45,10 +46,11 @@
       if (trovate) sessionStorage.setItem('mx-utm', JSON.stringify(UTM));
       else UTM = JSON.parse(sessionStorage.getItem('mx-utm') || '{}');
     } catch (e) {}
-    // il clic dall'inserzione (fbclid) resta nel cookie che il pixel Meta legge
-    // (formato di Meta: fb.1.<ms>.<fbclid>); poi l'indirizzo torna pulito
+    // il clic dall'inserzione (fbclid) si tiene in memoria e diventa il cookie
+    // che il pixel Meta legge SOLO se la persona accetta (formato di Meta:
+    // fb.1.<ms>.<fbclid>); intanto l'indirizzo torna pulito
     var fbclid = q.get('fbclid');
-    if (fbclid && C.pixel) try { document.cookie = '_fbc=fb.1.' + Date.now() + '.' + encodeURIComponent(fbclid.slice(0, 500)) + ';path=/;max-age=7776000;SameSite=Lax'; } catch (e) {}
+    if (fbclid) try { sessionStorage.setItem('mx-fbclid', fbclid.slice(0, 500) + '|' + Date.now()); } catch (e) {}
     if (location.search) history.replaceState(null, '', location.pathname);
   })();
 
@@ -74,19 +76,60 @@
 
   /* ---------- pixel Meta ----------
    * Deciso da Marco il 1 ottobre. Eventi standard, senza parametri:
-   * PageView all'arrivo, ViewContent a test finito, Lead quando lascia i dati
-   * (una volta sola), Contact sul bottone WhatsApp. Mai una risposta. */
+   * PageView, ViewContent a test finito, Lead quando lascia i dati
+   * (una volta sola), Contact sul bottone WhatsApp. Mai una risposta.
+   * Check legale 1 ottobre: niente parte (né script, né cookie _fbc, né fbq)
+   * finché la persona non tocca «Accetto» nel banner. La scelta resta nel
+   * telefono (localStorage). Con «Rifiuto» il test funziona uguale. */
   var PIXEL = { completato: 'ViewContent', lead_domande: 'Lead', prenotazione_iniziata: 'Lead', cta_whatsapp: 'Contact' };
-  if (C.pixel) {
+  var CONSENSO = 'mx-consenso-pixel', pxAcceso = false, pxFatti = {}, pxAttesa = [];
+  function sceltaPixel() { try { return localStorage.getItem(CONSENSO); } catch (e) { return null; } }
+  function accendiPixel() {
+    if (pxAcceso || !C.pixel || sceltaPixel() !== 'si') return;
+    pxAcceso = true;
+    try {
+      var fb = (sessionStorage.getItem('mx-fbclid') || '').split('|');
+      if (fb[0]) document.cookie = '_fbc=fb.1.' + (fb[1] || Date.now()) + '.' + encodeURIComponent(fb[0]) + ';path=/;max-age=7776000;SameSite=Lax';
+    } catch (e) {}
     (function (f, b, e, v, n, t, s) { if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); }; if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = []; t = b.createElement(e); t.async = !0; t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s); })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
     window.fbq('init', C.pixel);
     window.fbq('track', 'PageView');
+    // i passaggi fatti prima del sì (per esempio il test finito) partono adesso, una volta sola
+    pxAttesa.forEach(function (std) { if (!pxFatti[std]) { pxFatti[std] = 1; window.fbq('track', std); } }); pxAttesa = [];
   }
-  var pxFatti = {};
+  function spegniPixel() {
+    if (window.fbq) try { window.fbq('consent', 'revoke'); } catch (e) {}
+    ['_fbc', '_fbp'].forEach(function (c) { try { document.cookie = c + '=;path=/;max-age=0'; document.cookie = c + '=;path=/;domain=.' + location.hostname.split('.').slice(-2).join('.') + ';max-age=0'; } catch (e) {} });
+  }
   function px(nome) {
-    var std = PIXEL[nome]; if (!std || !C.pixel || !window.fbq || pxFatti[std]) return;
+    var std = PIXEL[nome]; if (!std || !C.pixel || pxFatti[std]) return;
+    if (!pxAcceso) { if (sceltaPixel() === null && pxAttesa.indexOf(std) < 0) pxAttesa.push(std); return; }
     pxFatti[std] = 1; window.fbq('track', std);
   }
+
+  /* ---------- banner cookie ----------
+   * Due bottoni con lo stesso peso. Compare finché non si sceglie; si riapre
+   * dal link «Preferenze cookie» nel piè di pagina. */
+  var $banner = null;
+  function banner(mostra) {
+    if (!C.pixel) return;
+    if (!$banner) {
+      $banner = document.createElement('div');
+      $banner.className = 'consenso'; $banner.setAttribute('role', 'region'); $banner.setAttribute('aria-label', 'Cookie');
+      $banner.innerHTML = '<div class="consenso-in"><p>Usiamo un cookie di Meta per sapere se le nostre inserzioni funzionano. <b>Non riceve mai le tue risposte.</b> Il test funziona uguale anche se rifiuti. <a href="informativa.html#cookie">Cookie e privacy</a></p>' +
+        '<div class="consenso-bott"><button type="button" class="btn vuoto" data-azione="cookie-no">Rifiuto</button><button type="button" class="btn vuoto" data-azione="cookie-si">Accetto</button></div></div>';
+      document.body.appendChild($banner);
+    }
+    $banner.hidden = !mostra;
+    document.body.classList.toggle('con-banner', !!mostra);
+  }
+  function scegliCookie(si) {
+    var prima = sceltaPixel();
+    try { localStorage.setItem(CONSENSO, si ? 'si' : 'no'); } catch (e) {}
+    banner(false);
+    if (si) accendiPixel(); else { pxAttesa = []; if (prima === 'si' || pxAcceso) spegniPixel(); }
+  }
+  if (C.pixel) { if (sceltaPixel() === 'si') accendiPixel(); }
 
   /* ---------- navigazione ---------- */
   function vai(passo, i, sostituisci) {
@@ -117,14 +160,20 @@
   function h(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   var NUMERI = ['', 'una', 'due', 'tre', 'quattro', 'cinque'];
   var FRECCIA = ' <span class="freccia" aria-hidden="true">→</span>';
-  function firma(completa) {
-    var s = '<footer class="firma no-stampa"><div class="fine">';
-    if (completa) s += '<p>Questionario orientativo. Non è una diagnosi e non sostituisce la visita medica.</p>' +
-      '<p style="margin-top:8px">MedX Clinic · Dott. Andrea Armenti &amp; Dott.ssa Beatrice Nardi · Corso Francia 221, Roma</p>' +
-      '<p>ALN Medical S.r.l. · Via delle Albicocche 25, 00071 Pomezia · P. IVA IT18236221000</p>';
-    else s += '<p>MedX Clinic · Corso Francia 221, Roma</p>';
-    s += '<p style="margin-top:8px"><a href="informativa.html">Informativa privacy di questo test</a> · <button type="button" class="link" data-azione="ricomincia" style="font-size:12.5px;min-height:0;padding:0;color:inherit">Cancella le risposte da questo telefono</button></p>';
-    return s + '</div></footer>';
+  // Piè di pagina: lo stesso di medxclinic.it (l'unico approvato), su ogni schermata,
+  // più le due righe proprie del test. Check legale 1 ottobre.
+  function firma() {
+    return '<footer class="firma no-stampa"><div class="fine">' +
+      '<p>Questionario orientativo. Non è una diagnosi e non sostituisce la visita medica.</p>' +
+      '<p class="firma-medici">Dott. Andrea Armenti &amp; Dott.ssa Beatrice Nardi</p>' +
+      '<p>Dott. Andrea Armenti Membro AICPE – Associazione Italiana Chirurgia Plastica ed Estetica e AITEB (associazione italiana terapia estetica botulino)</p>' +
+      '<p>Le informazioni presenti su questo sito non sostituiscono in alcun modo il consulto medico. Ogni trattamento è personalizzato sulla base della valutazione clinica. I risultati possono variare da persona a persona.</p>' +
+      '<p>MedX Clinic · Corso Francia 221, Roma</p>' +
+      '<p>Copyright © 2026 | Via delle albicocche 25 – 00071, Pomezia, Italia – P.iva: IT18236221000</p>' +
+      '<p class="firma-link"><a href="informativa.html">Informativa privacy</a><a href="informativa.html#cookie">Cookie policy</a>' +
+      (C.pixel ? '<button type="button" class="link" data-azione="cookie">Preferenze cookie</button>' : '') +
+      '<button type="button" class="link" data-azione="ricomincia">Cancella le risposte da questo telefono</button></p>' +
+      '</div></footer>';
   }
 
 
@@ -138,7 +187,7 @@
       corpo:
         // Primo schermo: il video vero della clinica (elettromiografia), titolo, un'azione.
         '<section class="eroe"><video src="img/sensori.mp4" poster="img/sensori.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video><div class="velo"></div>' +
-        '<div class="eroe-in"><div class="occhiello">MedX Clinic · Roma</div>' +
+        '<div class="eroe-in">' +
         '<h1 tabindex="-1">Da dove cominceresti a raccontare il tuo mal di testa?</h1>' +
         '<p class="lead">Il dott. Armenti parte da queste sette domande. Puoi farle anche tu, in due minuti. Dopo ognuna trovi <b>cosa c’entra quella cosa col mal di testa</b>.</p>' +
         '<button class="btn" type="button" data-azione="comincia">' + (ripresa ? 'Riprendi da dove eri' : 'Comincia') + FRECCIA + '</button>' +
@@ -149,9 +198,14 @@
         '<div class="lunga">' +
         // 1 · i muscoli
         '<section class="sez"><div class="occhiello">Il mal di testa del mattino</div>' +
-        '<figure class="tavola svela-tavola" aria-label="Tavola anatomica: il muscolo temporale e il massetere"><img src="img/anatomia.jpg" alt="" width="700" height="806" loading="lazy">' +
-        '<svg viewBox="0 0 400 360" aria-hidden="true"><circle class="punto" cx="196" cy="77" r="3.5"/><path class="tratto" d="M196 77 L46 40"/><text x="12" y="31">TEMPORALE</text>' +
-        '<circle class="punto due" cx="222" cy="242" r="3.5"/><path class="tratto due" d="M222 242 L56 284"/><text class="due" x="12" y="302">MASSETERE</text></svg></figure>' +
+        // la tavola di Marco (1 ott): i due muscoli si accendono uno dopo l'altro, linee giuste ridisegnate qui
+        '<figure class="tavola2 svela-tavola" aria-label="Tavola anatomica: il muscolo temporale e il massetere">' +
+        '<div class="t2-quadro"><img class="t2-base" src="img/tavola-muscoli.jpg" alt="" width="1100" height="997" loading="lazy">' +
+        '<img class="t2-m t2-temp" src="img/tavola-temporale.webp" alt="" loading="lazy"><img class="t2-m t2-mass" src="img/tavola-massetere.webp" alt="" loading="lazy"></div>' +
+        '<svg viewBox="0 0 1544 1400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
+        '<path class="tratto" d="M405 96 L790 470"/><circle class="punto" cx="790" cy="470" r="11"/><circle class="anello" cx="790" cy="470" r="11"/><text x="40" y="108">TEMPORALE</text>' +
+        '<path class="tratto due" d="M405 1300 L640 1010"/><circle class="punto due" cx="640" cy="1010" r="11"/><circle class="anello due" cx="640" cy="1010" r="11"/><text class="due" x="40" y="1328">MASSETERE</text>' +
+        '</svg></figure>' +
         '<p class="sez-testo">I muscoli che chiudono la mandibola — il <b>massetere</b> e il <b>temporale</b> — lavorano anche durante il sonno. Quando la contrazione notturna è intensa, il dolore può essere già presente prima di alzarsi.</p>' +
         '<h3 class="sez-tit">Le tempie</h3><p class="sez-testo">Il muscolo <b>temporale</b> è un ventaglio che occupa la tempia e scende verso la mandibola. È uno dei muscoli della masticazione, e la sua tensione si sente proprio in quella zona.</p>' +
         '<h3 class="sez-tit">La mascella e le guance</h3><p class="sez-testo">Il <b>massetere</b> è il muscolo che chiude la mandibola, e si trova esattamente lì. In rapporto alla sua dimensione è fra i più potenti del corpo.</p></section>' +
@@ -176,7 +230,7 @@
         '<p class="nota-foto">MedX Clinic · Corso Francia 221, Roma</p></section>' +
         '<p class="piccolo grigio" style="margin-top:30px">Se preferisci saltare le domande e vedere <b>come funziona una valutazione</b> — quanto dura, quanto costa, cosa si sente — <button type="button" class="link" data-azione="salta">la pagina è qui</button>.</p>' +
         '</div>' +
-        firma(true),
+        firma(),
       piede: ''
     };
   };
@@ -202,14 +256,14 @@
       '<img src="img/anatomia.jpg" alt="" width="700" height="806" loading="lazy">' +
       '<svg viewBox="0 0 400 360" aria-hidden="true">' +
       '<circle class="punto" cx="196" cy="77" r="3.5"/><path class="tratto" d="M196 77 L46 40"/><text x="12" y="31">TEMPORALE</text>' +
-      '<circle class="punto due" cx="222" cy="242" r="3.5"/><path class="tratto due" d="M222 242 L56 284"/><text class="due" x="12" y="302">MASSETERE</text>' +
+      '<circle class="punto due" cx="160" cy="241" r="3.5"/><path class="tratto due" d="M160 241 L92 290"/><text class="due" x="12" y="302">MASSETERE</text>' +
       '</svg><figcaption>Tavola illustrata</figcaption></figure>';
   }
 
   // Domanda 2 («Dove»): si risponde anche toccando la testa. Le zone sono le
   // stesse risposte della lista (stesso data-k), che resta sotto per chi preferisce.
   function mappaTesta(scelte) {
-    var Z = [[0, 335, 215, 105, 'TEMPIE', 300, 175], [1, 505, 455, 90, 'NUCA', 478, 415], [2, 205, 315, 70, 'OCCHI', 110, 275], [3, 385, 480, 90, 'MASCELLA', 300, 560]];
+    var Z = [[0, 335, 215, 105, 'TEMPIE', 300, 175], [1, 505, 455, 90, 'NUCA', 478, 415], [2, 205, 315, 70, 'OCCHI', 110, 275], [3, 290, 470, 90, 'MASCELLA', 215, 575]];
     return '<figure class="testa-tocca"><img src="img/anatomia.jpg" alt="" width="700" height="806">' +
       '<svg viewBox="0 0 700 806" preserveAspectRatio="xMidYMid meet" aria-hidden="true">' +
       Z.map(function (z) {
@@ -291,7 +345,7 @@
         '<div class="criterio"><div class="occhiello">Finito · 2 di 2</div><h2 tabindex="-1">Le cinque cose che si guardano</h2>' +
         '<p class="lead">Non esiste un test fai-da-te per il mal di testa muscolare. Esistono cinque caratteristiche che, <b>quando ci sono insieme</b>, dicono che vale la pena guardare i muscoli.</p>' +
         righeCriterio(true) +
-        '<p class="confronto svela"><b>Il confronto lo fai tu.</b> Se ti ritrovi in tre o più, hai una domanda precisa da fare a chi ti visiterà. Se non ti ritrovi in nessuna, <b>è un’informazione anche quella</b> — e ti risparmia una visita.</p>' +
+        '<p class="confronto svela"><b>Il confronto lo fai tu.</b> Se ti ritrovi in tre o più, hai una domanda precisa da fare a chi ti visiterà. Se non ti ritrovi in nessuna, <b>è un’informazione anche quella</b>.</p>' +
         '<p class="no-stampa" style="margin-top:18px"><button type="button" class="link" data-azione="vai" data-passo="riepilogo">Rivedi le tue risposte</button></p></div>' +
         firma(),
       piede: '<button class="btn" type="button" data-azione="vai" data-passo="pratiche">Come funziona una valutazione' + FRECCIA + '</button>'
@@ -337,7 +391,7 @@
       corpo:
         '<h2 tabindex="-1">Cosa vuoi fare adesso</h2>' +
         '<p class="sotto">Tre strade. Nessuna è obbligata per vedere quello che hai già visto.</p>' +
-        '<section class="porta-uno"><h3>Prenoto la valutazione</h3><p>Lasci nome e numero e ti chiamiamo noi per fissare giorno e ora. Il riepilogo arriva al medico, così non ricominci da capo.</p>' +
+        '<section class="porta-uno"><h3>Prenoto la valutazione</h3><p>Lasci nome e numero e ti chiamiamo noi per fissare giorno e ora. Se vuoi, puoi allegare le tue risposte: il medico le ha già in visita.</p>' +
         '<button class="btn" type="button" data-azione="prenota">Lascio il mio numero' + FRECCIA + '</button>' +
         (C.whatsapp ? '<p class="o-wa">oppure</p>' + bottoneWhatsApp('vuoto scuro') : '') + '</section>' +
         '<section class="porta-due"><h3>Ho prima delle domande</h3><p class="piccolo">Lasci nome, mail e numero. Ti scrive la segreteria — non il dottore, e non per venderti niente.</p>' +
@@ -367,7 +421,7 @@
         '<h2 tabindex="-1">A chi telefoniamo?</h2>' +
         '<p class="sotto">Ti chiamiamo noi per fissare giorno e ora della valutazione. Il numero serve solo a questo.</p>' +
         '<form id="formPrenota" novalidate>' + campiContatto('p') +
-        '<label class="spunta"><input type="checkbox" id="pAllega"><span>Allega le mie sette risposte alla richiesta, così il dottore le ha già in visita. <span class="grigio">(Facoltativo. Se non spunti, restano solo sul tuo telefono.)</span></span></label>' +
+        '<label class="spunta"><input type="checkbox" id="pAllega"><span>Acconsento a inviare le mie sette risposte, che riguardano la mia salute, perché il medico le abbia già in visita. <span class="grigio">(Facoltativo. Se non spunti, restano solo sul tuo telefono.)</span></span></label>' +
         '<div class="avviso" id="pAvviso" hidden role="alert"></div>' +
         '<button class="btn" type="submit" id="pInvia">Chiamatemi' + FRECCIA + '</button></form>' +
         firma(),
@@ -461,6 +515,9 @@
     else if (a === 'whatsapp') ev('cta_whatsapp', null, true);
     else if (a === 'reel') { var fg = b.parentNode; fg.innerHTML = '<video src="img/reel-dottore.mp4" controls autoplay playsinline></video>'; }
     else if (a === 'stampa') { ev('stampa'); window.print(); }
+    else if (a === 'cookie-si') scegliCookie(true);
+    else if (a === 'cookie-no') scegliCookie(false);
+    else if (a === 'cookie') banner(true);
     else if (a === 'stampa-niente') { ev('cta_niente', null, true); ev('stampa'); stampaRiepilogo(); }
   });
   function primaVuota() { for (var i = 0; i < N; i++) if (!risposta(i).length) return i; return N - 1; }
@@ -545,4 +602,5 @@
   history.replaceState({ passo: S.passo, i: S.i, n: 0 }, '');
   ev('landing', null, true);
   render(false);
+  if (C.pixel && sceltaPixel() === null) banner(true);
 })();
