@@ -222,6 +222,9 @@ body[data-passo="criterio"] .piede{background:linear-gradient(to top,rgba(7,29,3
 .porta-uno h3{color:var(--cupo);font-size:23px;font-weight:700}
 .porta-uno p{margin-top:8px;font-size:15.5px}
 .porta-uno .btn{margin-top:20px;background:var(--cupo);color:var(--crema)}
+.o-wa{text-align:center;margin:12px 0 2px;font:500 12.5px/1 var(--h);color:#6A706D}
+.porta-uno .btn.vuoto.scuro{margin-top:10px;background:transparent;color:var(--cupo);border:1px solid rgba(10,40,41,.35);box-shadow:none}
+a.btn{text-decoration:none}
 .porta-due{margin-top:14px;padding:24px 22px;border-radius:20px;border:1px solid var(--riga);background:var(--vetro)}
 .porta-due h3{font-size:20px}
 .porta-due p{margin-top:6px;color:var(--tenue)}

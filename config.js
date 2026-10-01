@@ -27,7 +27,15 @@ window.MX = {
     key: 'sb_publishable_sup28sudXui-RMvTRjm3Vg_Re8wAQEs'
   },
 
-  // La prenotazione vera di MedX oggi: la telefonata con la segreteria su Calendly.
+  // Pixel Meta (dataset MedX già esistente). Riceve solo PageView, ViewContent
+  // (test finito), Lead (dati lasciati) e Contact (bottone WhatsApp). null = spento.
+  pixel: '1339633081554791',
+
+  // Niente Calendly (Marco, 1 ottobre): chi vuole prenotare lascia il numero e lo
+  // chiama la setter. WhatsApp commerciale di MedX Clinic, collegato a Chakra.
+  whatsapp: '+39 352 026 9390',
+
+  // Solo per la versione classica (/classica/), che tiene il giro con Calendly.
   calendly: 'https://calendly.com/medxclinic26/30min',
 
   telefono: '+39 352 029 4880'

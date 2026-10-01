@@ -10,13 +10,13 @@
  *    (localStorage) e se ne vanno solo se la persona spunta da sola
  *    «allega le mie risposte» prima di prenotare;
  *  - non carica niente di esterno finché la persona non lo chiede
- *    (Calendly parte solo sul suo clic). Niente pixel, niente cookie.
+ *    Il pixel Meta riceve solo tre passaggi anonimi (vedi «pixel Meta»).
  */
 (function () {
   'use strict';
   var C = window.MX, T = window.TESTO, D = T.domande, N = D.length;
   var CHIAVE = 'medx-mal-di-testa-nuova-v1', SCADENZA = 30 * 24 * 3600 * 1000;
-  var PASSI = ['apertura', 'perimetro', 'domanda', 'riepilogo', 'criterio', 'pratiche', 'porte', 'dati', 'calendario', 'prenotato', 'grazie'];
+  var PASSI = ['apertura', 'perimetro', 'domanda', 'riepilogo', 'criterio', 'pratiche', 'porte', 'dati', 'prenotato', 'grazie'];
 
   var $corpo = document.getElementById('corpo'), $piede = document.getElementById('piede'),
       $indietro = document.getElementById('indietro'), $avanz = document.getElementById('avanz'),
@@ -32,7 +32,7 @@
     else localStorage.removeItem(CHIAVE);
   } catch (e) {}
   // le pagine di conferma non si riaprono al ritorno: si torna alle tre porte
-  if (S.passo === 'prenotato' || S.passo === 'grazie' || S.passo === 'calendario' || S.passo === 'dati') S.passo = 'porte';
+  if (S.passo === 'prenotato' || S.passo === 'grazie' || S.passo === 'dati') S.passo = 'porte';
   function salva() { S.t = Date.now(); try { localStorage.setItem(CHIAVE, JSON.stringify(S)); } catch (e) {} }
   function risposta(i) { var r = S.r[i]; return Array.isArray(r) ? r : (r === undefined ? [] : [r]); }
 
@@ -45,7 +45,10 @@
       if (trovate) sessionStorage.setItem('mx-utm', JSON.stringify(UTM));
       else UTM = JSON.parse(sessionStorage.getItem('mx-utm') || '{}');
     } catch (e) {}
-    // l'indirizzo resta pulito: niente parametri in giro (e niente fbclid da nessuna parte)
+    // il clic dall'inserzione (fbclid) resta nel cookie che il pixel Meta legge
+    // (formato di Meta: fb.1.<ms>.<fbclid>); poi l'indirizzo torna pulito
+    var fbclid = q.get('fbclid');
+    if (fbclid && C.pixel) try { document.cookie = '_fbc=fb.1.' + Date.now() + '.' + encodeURIComponent(fbclid.slice(0, 500)) + ';path=/;max-age=7776000;SameSite=Lax'; } catch (e) {}
     if (location.search) history.replaceState(null, '', location.pathname);
   })();
 
@@ -58,6 +61,7 @@
   function ev(nome, passo, unaVolta) {
     var k = nome + ':' + (passo || '');
     if (unaVolta && gia[k]) return; gia[k] = 1;
+    px(nome);
     if (!C.eventi || !C.eventi.key || C.eventi.key.indexOf('__') === 0) return;
     var riga = { funnel: 'mal-di-testa-nuova', evento: nome, sessione: SESS, dispositivo: MOBILE };
     if (passo) riga.passo = passo;
@@ -67,6 +71,22 @@
     } catch (e) {}
   }
   window.__mxEventi = function () { return Object.keys(gia); }; // per il collaudo
+
+  /* ---------- pixel Meta ----------
+   * Deciso da Marco il 1 ottobre. Eventi standard, senza parametri:
+   * PageView all'arrivo, ViewContent a test finito, Lead quando lascia i dati
+   * (una volta sola), Contact sul bottone WhatsApp. Mai una risposta. */
+  var PIXEL = { completato: 'ViewContent', lead_domande: 'Lead', prenotazione_iniziata: 'Lead', cta_whatsapp: 'Contact' };
+  if (C.pixel) {
+    (function (f, b, e, v, n, t, s) { if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); }; if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = []; t = b.createElement(e); t.async = !0; t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s); })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    window.fbq('init', C.pixel);
+    window.fbq('track', 'PageView');
+  }
+  var pxFatti = {};
+  function px(nome) {
+    var std = PIXEL[nome]; if (!std || !C.pixel || !window.fbq || pxFatti[std]) return;
+    pxFatti[std] = 1; window.fbq('track', std);
+  }
 
   /* ---------- navigazione ---------- */
   function vai(passo, i, sostituisci) {
@@ -84,7 +104,7 @@
   function precedente() {
     var p = S.passo;
     if (p === 'domanda') return S.i > 0 ? ['domanda', S.i - 1] : ['perimetro'];
-    var prima = { perimetro: 'apertura', riepilogo: 'domanda', criterio: 'riepilogo', pratiche: 'criterio', porte: 'pratiche', dati: 'porte', calendario: 'dati', prenotato: 'porte', grazie: 'porte' }[p] || 'apertura';
+    var prima = { perimetro: 'apertura', riepilogo: 'domanda', criterio: 'riepilogo', pratiche: 'criterio', porte: 'pratiche', dati: 'porte', prenotato: 'porte', grazie: 'porte' }[p] || 'apertura';
     return prima === 'domanda' ? ['domanda', N - 1] : [prima];
   }
   function indietro() {
@@ -294,8 +314,9 @@
       corpo:
         '<h2 tabindex="-1">Cosa vuoi fare adesso</h2>' +
         '<p class="sotto">Tre strade. Nessuna è obbligata per vedere quello che hai già visto.</p>' +
-        '<section class="porta-uno"><h3>Prenoto la valutazione</h3><p>Scegli tu giorno e ora. Il riepilogo arriva al medico, così non ricominci da capo.</p>' +
-        '<button class="btn" type="button" data-azione="prenota">Scegli quando' + FRECCIA + '</button></section>' +
+        '<section class="porta-uno"><h3>Prenoto la valutazione</h3><p>Lasci nome e numero e ti chiamiamo noi per fissare giorno e ora. Il riepilogo arriva al medico, così non ricominci da capo.</p>' +
+        '<button class="btn" type="button" data-azione="prenota">Lascio il mio numero' + FRECCIA + '</button>' +
+        (C.whatsapp ? '<p class="o-wa">oppure</p>' + bottoneWhatsApp('vuoto scuro') : '') + '</section>' +
         '<section class="porta-due"><h3>Ho prima delle domande</h3><p class="piccolo">Lasci nome, mail e numero. Ti scrive la segreteria — non il dottore, e non per venderti niente.</p>' +
         (domandeAperte
           ? '<form id="formDomande" novalidate>' + campiContatto('d') +
@@ -311,28 +332,22 @@
     };
   };
 
+  function bottoneWhatsApp(cls) {
+    if (!C.whatsapp) return '';
+    var n = C.whatsapp.replace(/[^\d]/g, ''), testo = encodeURIComponent('Ciao, vorrei fissare una valutazione da MedX Clinic.');
+    return '<a class="btn ' + (cls || 'vuoto') + '" href="https://wa.me/' + n + '?text=' + testo + '" target="_blank" rel="noopener" data-azione="whatsapp">Scrivici su WhatsApp</a>';
+  }
+
   V.dati = function () {
     return {
       corpo:
-        '<div class="occhiello">Passo 1 di 2</div><h2 tabindex="-1">A chi scriviamo la conferma?</h2>' +
-        '<p class="sotto">Servono per fissare l’appuntamento e per avvisarti se cambia qualcosa.</p>' +
+        '<h2 tabindex="-1">A chi telefoniamo?</h2>' +
+        '<p class="sotto">Ti chiamiamo noi per fissare giorno e ora della valutazione. Il numero serve solo a questo.</p>' +
         '<form id="formPrenota" novalidate>' + campiContatto('p') +
         '<label class="spunta"><input type="checkbox" id="pAllega"><span>Allega le mie sette risposte alla richiesta, così il dottore le ha già in visita. <span class="grigio">(Facoltativo. Se non spunti, restano solo sul tuo telefono.)</span></span></label>' +
         '<div class="avviso" id="pAvviso" hidden role="alert"></div>' +
-        '<button class="btn" type="submit" id="pInvia">Continua: scegli quando</button></form>' +
+        '<button class="btn" type="submit" id="pInvia">Chiamatemi' + FRECCIA + '</button></form>' +
         firma(),
-      piede: ''
-    };
-  };
-
-  V.calendario = function () {
-    return {
-      corpo:
-        '<div class="occhiello">Passo 2 di 2</div><h2 tabindex="-1">Quando ti va bene?</h2>' +
-        '<p class="sotto">Scegli un momento per la telefonata di 20 minuti con la segreteria: insieme fissate il giorno della valutazione in clinica.</p>' +
-        '<div class="calendly" id="calendly"><div class="calendly-attesa">Si apre il calendario di Calendly, il servizio di prenotazione di MedX Clinic…</div></div>' +
-        '<div class="quel-giorno"><h3>Cosa succede quel giorno</h3><p class="piccolo">Ti accoglie la segreteria, poi entri dal dottore. La prima parte è fatta di domande — quelle a cui hai già risposto. Poi si guarda e si misura.</p></div>' +
-        '<p class="sotto-btn">Se cambia qualcosa si sposta con un messaggio</p>' + firma(),
       piede: ''
     };
   };
@@ -340,8 +355,9 @@
   V.prenotato = function () {
     return {
       corpo:
-        '<div class="occhiello">Fatto</div><h2 tabindex="-1">Ci sentiamo al telefono</h2>' +
-        '<p class="lead">La conferma ti arriva per email da Calendly. La segreteria ti chiama all’orario che hai scelto e fissa con te la valutazione.</p>' +
+        '<div class="occhiello">Ricevuto</div><h2 tabindex="-1">Ti chiamiamo noi</h2>' +
+        '<p class="lead">MedX Clinic ti telefona nelle prossime ore per fissare con te giorno e ora della valutazione. Se preferisci, scrivici tu su WhatsApp.</p>' +
+        '<div style="margin-top:20px">' + bottoneWhatsApp() + '</div>' +
         '<div class="quel-giorno"><h3>Cosa succede quel giorno</h3><p class="piccolo">Ti accoglie la segreteria, poi entri dal dottore. La prima parte è fatta di domande — quelle a cui hai già risposto. Poi si guarda e si misura.</p></div>' +
         '<p style="margin-top:16px"><button type="button" class="link" data-azione="stampa-niente">Salva o stampa il tuo riepilogo</button></p>' + firma(),
       piede: ''
@@ -354,6 +370,7 @@
         '<div class="occhiello">Ricevuto</div><h2 tabindex="-1">Ti scrive la segreteria</h2>' +
         '<p class="lead">La segreteria di MedX Clinic ti risponde nelle prossime ore. Non il dottore, e non per venderti niente: per rispondere alle tue domande su come funziona.</p>' +
         '<p class="piccolo grigio" style="margin-top:12px">Se preferisci chiamare tu: <a href="tel:' + C.telefono.replace(/\s/g, '') + '">' + h(C.telefono) + '</a>.</p>' +
+        '<div style="margin-top:18px">' + bottoneWhatsApp() + '</div>' +
         '<p style="margin-top:16px"><button type="button" class="link" data-azione="stampa-niente">Salva o stampa il tuo riepilogo</button></p>' + firma(),
       piede: ''
     };
@@ -377,7 +394,6 @@
       var t = $corpo.querySelector('h1,h2'); if (t) t.focus({ preventScroll: true });
     }
     svela();
-    if (S.passo === 'calendario') apriCalendly();
     if (S.passo === 'dati' || S.passo === 'porte') precompila();
   }
 
@@ -413,6 +429,7 @@
     else if (a === 'avanti') { if (!risposta(S.i).length) return; ev('domanda', S.i + 1, true); if (S.i < N - 1) vai('domanda', S.i + 1); else vai('riepilogo'); }
     else if (a === 'vai') vai(b.getAttribute('data-passo'));
     else if (a === 'prenota') { ev('cta_prenota', null, true); vai('dati'); }
+    else if (a === 'whatsapp') ev('cta_whatsapp', null, true);
     else if (a === 'stampa') { ev('stampa'); window.print(); }
     else if (a === 'stampa-niente') { ev('cta_niente', null, true); ev('stampa'); stampaRiepilogo(); }
   });
@@ -482,7 +499,7 @@
     mandaActive(c, porta, allega).then(function () {
       ultimoContatto = c;
       if (porta === 'domande') { ev('lead_domande', null, true); vai('grazie'); }
-      else { ev('prenotazione_iniziata', null, true); vai('calendario'); }
+      else { ev('prenotazione_iniziata', null, true); vai('prenotato'); }
     }, function () {
       ev('errore_invio');
       bott.disabled = false; bott.textContent = testo; avv.hidden = false;
@@ -492,28 +509,6 @@
   document.addEventListener('submit', function (e) {
     if (e.target.id === 'formDomande') { ev('cta_domande', null, true); gestisciModulo(e, 'd', 'domande'); }
     if (e.target.id === 'formPrenota') gestisciModulo(e, 'p', 'prenotazione');
-  });
-
-  /* ---------- Calendly: si carica solo qui, dopo il clic ---------- */
-  function apriCalendly() {
-    var box = document.getElementById('calendly'); if (!box) return;
-    ev('prenotazione_calendario', null, true);
-    var url = C.calendly + '?hide_event_type_details=1&hide_landing_page_details=1';
-    // nome ed email già scritti (Calendly li legge dall'indirizzo); niente telefono, niente risposte
-    if (ultimoContatto) url += '&name=' + encodeURIComponent(ultimoContatto.nome) + '&email=' + encodeURIComponent(ultimoContatto.email);
-    function monta() {
-      box.innerHTML = '';
-      window.Calendly.initInlineWidget({ url: url, parentElement: box });
-    }
-    if (window.Calendly) return monta();
-    var s = document.createElement('script'); s.src = 'https://assets.calendly.com/assets/external/widget.js'; s.async = true;
-    s.onload = monta;
-    s.onerror = function () { box.innerHTML = '<div class="calendly-attesa">Il calendario non si è aperto. <a href="' + C.calendly + '" target="_blank" rel="noopener">Aprilo qui</a>, oppure chiama la segreteria al <a href="tel:' + C.telefono.replace(/\s/g, '') + '">' + h(C.telefono) + '</a>.</div>'; };
-    document.head.appendChild(s);
-  }
-  window.addEventListener('message', function (e) {
-    if (e.origin !== 'https://calendly.com' || !e.data || e.data.event !== 'calendly.event_scheduled') return;
-    ev('prenotazione_completata', null, true); vai('prenotato');
   });
 
   /* ---------- partenza ---------- */
