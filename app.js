@@ -315,8 +315,8 @@
         '<div class="occhiello">Il tuo riepilogo è pronto</div>' +
         '<h2 tabindex="-1">Compila e ricevi il riepilogo</h2>' +
         '<p class="sotto">Lo vedi subito qui, appena premi il pulsante.</p>' +
-        '<form id="formSblocca" novalidate>' + campiContatto('s') +
-        '<p class="nota-dati">Ti scrive solo la segreteria di MedX Clinic. Le tue risposte restano sul telefono.</p>' +
+        '<form id="formSblocca" novalidate>' + campiContatto('s', true) +
+        '<p class="nota-dati">Ti scrive solo la segreteria di MedX Clinic.</p>' +
         '<div class="avviso" id="sAvviso" hidden role="alert"></div>' +
         '<button class="btn" type="submit" id="sInvia">Ricevi il riepilogo' + FRECCIA + '</button></form>' +
         firma(),
@@ -392,13 +392,18 @@
     };
   };
 
-  function campiContatto(pre) {
+  // unica = una spunta sola che vale per privacy, WhatsApp e risposte (Marco, 2 ottobre: meno spunte, più contatti)
+  function campiContatto(pre, unica) {
+    var spunte = unica
+      ? '<label class="spunta"><input type="checkbox" id="' + pre + 'Privacy"><span>Ho letto l’<a href="informativa.html" target="_blank" rel="noopener">informativa privacy</a> e acconsento a essere ricontattato da MedX Clinic, anche su WhatsApp, e a inviare le mie risposte al test.</span></label>' +
+        '<div class="errore" id="' + pre + 'PrivacyE"></div>'
+      : '<label class="spunta"><input type="checkbox" id="' + pre + 'Privacy"><span>Ho letto l’<a href="informativa.html" target="_blank" rel="noopener">informativa privacy</a> e acconsento al trattamento dei miei dati per essere ricontattato.</span></label>' +
+        '<div class="errore" id="' + pre + 'PrivacyE"></div>' +
+        '<label class="spunta"><input type="checkbox" id="' + pre + 'Wa"><span>Acconsento a essere ricontattato anche su WhatsApp dalla segreteria di MedX Clinic. <span class="grigio">(Facoltativo)</span></span></label>';
     return '<div class="campo"><label for="' + pre + 'Nome">Nome</label><input id="' + pre + 'Nome" name="nome" autocomplete="name" required maxlength="80"><div class="errore" id="' + pre + 'NomeE"></div></div>' +
       '<div class="campo"><label for="' + pre + 'Email">Email</label><input id="' + pre + 'Email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength="120"><div class="errore" id="' + pre + 'EmailE"></div></div>' +
       '<div class="campo"><label for="' + pre + 'Tel">Telefono</label><input id="' + pre + 'Tel" name="tel" type="tel" autocomplete="tel" inputmode="tel" required maxlength="20"><div class="errore" id="' + pre + 'TelE"></div></div>' +
-      '<label class="spunta"><input type="checkbox" id="' + pre + 'Privacy"><span>Ho letto l’<a href="informativa.html" target="_blank" rel="noopener">informativa privacy</a> e acconsento al trattamento dei miei dati per essere ricontattato.</span></label>' +
-      '<div class="errore" id="' + pre + 'PrivacyE"></div>' +
-      '<label class="spunta"><input type="checkbox" id="' + pre + 'Wa"><span>Acconsento a essere ricontattato anche su WhatsApp dalla segreteria di MedX Clinic. <span class="grigio">(Facoltativo)</span></span></label>';
+      spunte;
   }
 
   // il modulo della seconda porta resta chiuso finché la persona non sceglie quella porta
@@ -575,7 +580,8 @@
     err('Email', /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email) ? '' : 'Controlla l’indirizzo email.');
     err('Tel', /^\+\d{9,15}$/.test(tel) ? '' : 'Scrivi un numero di telefono valido.');
     err('Privacy', $('Privacy').checked ? '' : 'Per poterti ricontattare serve la spunta sull’informativa.');
-    return ok ? { nome: nome, email: email, tel: tel, wa: $('Wa').checked } : null;
+    // nel modulo a spunta unica (senza la casella WhatsApp) la spunta vale anche per WhatsApp
+    return ok ? { nome: nome, email: email, tel: tel, wa: $('Wa') ? $('Wa').checked : true } : null;
   }
 
   // Invio ad Active Campaign col modulo nativo. Una richiesta "semplice"
@@ -600,7 +606,8 @@
     var bott = document.getElementById(p + 'Invia'), avv = document.getElementById(p + 'Avviso');
     if (bott.disabled) return; // doppio tocco
     var c = valida(p); if (!c) return;
-    var allega = p === 'p' && document.getElementById('pAllega').checked;
+    // modulo del riepilogo: la spunta unica comprende l'invio delle risposte
+    var spAllega = document.getElementById(p + 'Allega'), allega = p === 's' || !!(spAllega && spAllega.checked);
     bott.disabled = true; var testo = bott.textContent; bott.textContent = 'Invio in corso…'; avv.hidden = true;
     mandaActive(c, porta, allega).then(function () {
       ultimoContatto = c;
