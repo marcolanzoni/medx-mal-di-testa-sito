@@ -17,7 +17,7 @@
   'use strict';
   var C = window.MX, T = window.TESTO, D = T.domande, N = D.length;
   var CHIAVE = 'medx-mal-di-testa-nuova-v1', SCADENZA = 30 * 24 * 3600 * 1000;
-  var PASSI = ['apertura', 'perimetro', 'domanda', 'riepilogo', 'criterio', 'pratiche', 'porte', 'dati', 'prenotato', 'grazie'];
+  var PASSI = ['apertura', 'perimetro', 'domanda', 'sblocca', 'riepilogo', 'criterio', 'pratiche', 'porte', 'dati', 'prenotato', 'grazie'];
 
   var $corpo = document.getElementById('corpo'), $piede = document.getElementById('piede'),
       $indietro = document.getElementById('indietro'), $avanz = document.getElementById('avanz'),
@@ -34,6 +34,8 @@
   } catch (e) {}
   // le pagine di conferma non si riaprono al ritorno: si torna alle tre porte
   if (S.passo === 'prenotato' || S.passo === 'grazie' || S.passo === 'dati') S.passo = 'porte';
+  // il riepilogo si vede dopo aver lasciato il contatto (Marco, 2 ottobre)
+  function chiuso(p) { return !S.ok && (p === 'riepilogo' || p === 'criterio'); }
   function salva() { S.t = Date.now(); try { localStorage.setItem(CHIAVE, JSON.stringify(S)); } catch (e) {} }
   function risposta(i) { var r = S.r[i]; return Array.isArray(r) ? r : (r === undefined ? [] : [r]); }
 
@@ -81,7 +83,7 @@
    * Check legale 1 ottobre: niente parte (né script, né cookie _fbc, né fbq)
    * finché la persona non tocca «Accetto» nel banner. La scelta resta nel
    * telefono (localStorage). Con «Rifiuto» il test funziona uguale. */
-  var PIXEL = { completato: 'ViewContent', lead_domande: 'Lead', prenotazione_iniziata: 'Lead', cta_whatsapp: 'Contact' };
+  var PIXEL = { completato: 'ViewContent', lead_riepilogo: 'Lead', lead_domande: 'Lead', prenotazione_iniziata: 'Lead', cta_whatsapp: 'Contact' };
   var CONSENSO = 'mx-consenso-pixel', pxAcceso = false, pxFatti = {}, pxAttesa = [];
   function sceltaPixel() { try { return localStorage.getItem(CONSENSO); } catch (e) { return null; } }
   function accendiPixel() {
@@ -147,7 +149,7 @@
   function precedente() {
     var p = S.passo;
     if (p === 'domanda') return S.i > 0 ? ['domanda', S.i - 1] : ['perimetro'];
-    var prima = { perimetro: 'apertura', riepilogo: 'domanda', criterio: 'riepilogo', pratiche: 'criterio', porte: 'pratiche', dati: 'porte', prenotato: 'porte', grazie: 'porte' }[p] || 'apertura';
+    var prima = { perimetro: 'apertura', sblocca: 'domanda', riepilogo: 'domanda', criterio: 'riepilogo', pratiche: 'criterio', porte: 'pratiche', dati: 'porte', prenotato: 'porte', grazie: 'porte' }[p] || 'apertura';
     return prima === 'domanda' ? ['domanda', N - 1] : [prima];
   }
   function indietro() {
@@ -306,6 +308,22 @@
     };
   };
 
+  V.sblocca = function () {
+    ev('sblocca', null, true);
+    return {
+      corpo:
+        '<div class="occhiello">Il tuo riepilogo è pronto</div>' +
+        '<h2 tabindex="-1">Compila e ricevi il riepilogo</h2>' +
+        '<p class="sotto">Lo vedi subito qui, appena premi il pulsante.</p>' +
+        '<form id="formSblocca" novalidate>' + campiContatto('s') +
+        '<p class="nota-dati">Ti scrive solo la segreteria di MedX Clinic. Le tue risposte restano sul telefono.</p>' +
+        '<div class="avviso" id="sAvviso" hidden role="alert"></div>' +
+        '<button class="btn" type="submit" id="sInvia">Ricevi il riepilogo' + FRECCIA + '</button></form>' +
+        firma(),
+      piede: ''
+    };
+  };
+
   function righeRiepilogo() {
     return '<ul class="righe">' + D.map(function (d, i) {
       var sc = risposta(i);
@@ -455,6 +473,7 @@
 
   /* ---------- disegno ---------- */
   function render(anima) {
+    if (chiuso(S.passo)) S.passo = 'sblocca';
     var v = (V[S.passo] || V.apertura)();
     $corpo.innerHTML = v.corpo; $piede.innerHTML = v.piede || '';
     document.body.setAttribute('data-passo', S.passo);
@@ -471,7 +490,7 @@
       var t = $corpo.querySelector('h1,h2'); if (t) t.focus({ preventScroll: true });
     }
     svela();
-    if (S.passo === 'dati' || S.passo === 'porte') precompila();
+    if (S.passo === 'dati' || S.passo === 'porte' || S.passo === 'sblocca') precompila();
   }
 
   // le cinque cose entrano allo scorrere, una volta sola (niente conteggi automatici)
@@ -509,8 +528,8 @@
       if (!aperta) { b.setAttribute('aria-expanded', 'true'); var pg = document.getElementById('pag' + b.getAttribute('data-k')); pg.hidden = false; if (pg.scrollIntoView) setTimeout(function () { pg.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 30); }
     }
     else if (a === 'apri-domande') { domandeAperte = true; render(false); precompila(); var n0 = document.getElementById('dNome'); if (n0) { n0.scrollIntoView({ behavior: 'smooth', block: 'center' }); n0.focus({ preventScroll: true }); } }
-    else if (a === 'avanti') { if (!risposta(S.i).length) return; ev('domanda', S.i + 1, true); if (S.i < N - 1) vai('domanda', S.i + 1); else vai('riepilogo'); }
-    else if (a === 'vai') vai(b.getAttribute('data-passo'));
+    else if (a === 'avanti') { if (!risposta(S.i).length) return; ev('domanda', S.i + 1, true); if (S.i < N - 1) vai('domanda', S.i + 1); else vai(S.ok ? 'riepilogo' : 'sblocca'); }
+    else if (a === 'vai') { var dest = b.getAttribute('data-passo'); vai(chiuso(dest) ? 'sblocca' : dest); }
     else if (a === 'prenota') { ev('cta_prenota', null, true); vai('dati'); }
     else if (a === 'whatsapp') ev('cta_whatsapp', null, true);
     else if (a === 'reel') { var fg = b.parentNode; fg.innerHTML = '<video src="img/reel-dottore.mp4" controls autoplay playsinline></video>'; }
@@ -542,7 +561,7 @@
   var ultimoContatto = null;
   function precompila() {
     if (!ultimoContatto) return;
-    ['d', 'p'].forEach(function (p) {
+    ['d', 'p', 's'].forEach(function (p) {
       var n = document.getElementById(p + 'Nome'); if (n && !n.value) { n.value = ultimoContatto.nome; document.getElementById(p + 'Email').value = ultimoContatto.email; document.getElementById(p + 'Tel').value = ultimoContatto.tel; }
     });
   }
@@ -585,7 +604,8 @@
     bott.disabled = true; var testo = bott.textContent; bott.textContent = 'Invio in corso…'; avv.hidden = true;
     mandaActive(c, porta, allega).then(function () {
       ultimoContatto = c;
-      if (porta === 'domande') { ev('lead_domande', null, true); vai('grazie'); }
+      if (porta === 'riepilogo') { S.ok = 1; salva(); ev('lead_riepilogo', null, true); vai('riepilogo', undefined, true); }
+      else if (porta === 'domande') { ev('lead_domande', null, true); vai('grazie'); }
       else { ev('prenotazione_iniziata', null, true); vai('prenotato'); }
     }, function () {
       ev('errore_invio');
@@ -596,6 +616,7 @@
   document.addEventListener('submit', function (e) {
     if (e.target.id === 'formDomande') { ev('cta_domande', null, true); gestisciModulo(e, 'd', 'domande'); }
     if (e.target.id === 'formPrenota') gestisciModulo(e, 'p', 'prenotazione');
+    if (e.target.id === 'formSblocca') gestisciModulo(e, 's', 'riepilogo');
   });
 
   /* ---------- partenza ---------- */
